@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>Stamp Loyalty App</title>
+  <style>
+    :root{--bg:#020617;--card:#0f172a;--line:#1f2937;--text:#f8fafc;--muted:#94a3b8;--accent:#f43f5e;--green:#22c55e;--yellow:#f59e0b;--red:#ef4444;--blue:#38bdf8}
+    *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+    body{margin:0;min-height:100vh;background:radial-gradient(circle at top,rgba(244,63,94,.25),transparent 35%),linear-gradient(180deg,#020617,#0f172a);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;padding:16px}
+    .app{max-width:540px;margin:0 auto}.logo{width:78px;height:78px;border-radius:26px;background:linear-gradient(135deg,var(--accent),#fb7185);display:flex;align-items:center;justify-content:center;margin:10px auto 14px;font-size:34px;font-weight:900;box-shadow:0 16px 40px rgba(244,63,94,.35)}
+    h1{text-align:center;margin:0;font-size:30px;letter-spacing:-.04em}.sub{text-align:center;color:var(--muted);margin:8px 0 20px;font-size:14px}
+    .tabs{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}.tab{border:1px solid var(--line);background:rgba(15,23,42,.85);color:var(--text);padding:13px;border-radius:18px;font-weight:800;font-size:15px}.tab.active{background:var(--accent);border-color:var(--accent);box-shadow:0 10px 30px rgba(244,63,94,.25)}
+    .card{background:rgba(15,23,42,.94);border:1px solid rgba(148,163,184,.16);border-radius:26px;padding:18px;box-shadow:0 18px 45px rgba(0,0,0,.25);margin-bottom:14px}
+    label{display:block;color:var(--muted);margin:12px 0 6px;font-size:13px;font-weight:700}input{width:100%;background:#020617;color:var(--text);border:1px solid var(--line);border-radius:16px;padding:15px;font-size:16px;outline:none}input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(244,63,94,.15)}
+    button{width:100%;border:0;border-radius:16px;padding:15px;margin-top:10px;font-size:16px;font-weight:900;color:#fff;background:var(--accent);cursor:pointer}button:active{transform:scale(.98)}button.secondary{background:#334155}button.green{background:var(--green)}button.yellow{background:var(--yellow)}button.red{background:var(--red)}
+    .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}.hidden{display:none!important}.status{min-height:22px;color:var(--muted);font-size:14px;margin-top:10px;line-height:1.4}.error{color:#fca5a5}.success{color:#86efac}.bigNumber{font-size:58px;font-weight:1000;text-align:center;line-height:1;margin:8px 0}
+    .stampGrid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:16px 0}.stamp{aspect-ratio:1;border-radius:999px;border:2px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:22px;background:#020617}.stamp.on{background:var(--accent);border-color:var(--accent);box-shadow:0 8px 20px rgba(244,63,94,.25)}
+    .mini{color:var(--muted);font-size:13px;line-height:1.5}.customerBox{background:#020617;border:1px solid var(--line);border-radius:20px;padding:14px;margin-top:12px}.customerName{font-size:22px;font-weight:900;margin-bottom:4px}.pill{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:7px 10px;background:#111827;color:var(--muted);font-size:13px;margin:4px 4px 4px 0}.historyItem{border-bottom:1px solid var(--line);padding:10px 0;font-size:14px}.historyItem:last-child{border-bottom:0}.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px}.topbar button{width:auto;padding:10px 14px;font-size:14px;margin:0}.adminEmail{color:var(--muted);font-size:13px;overflow:hidden;text-overflow:ellipsis}.divider{height:1px;background:var(--line);margin:16px 0}
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="logo">★</div>
+    <h1>Stamp Loyalty</h1>
+    <div class="sub">10 stamps = 1 free reward · reward expires in 14 days</div>
+    <div class="tabs"><button id="customerTab" class="tab active">Customer</button><button id="adminTab" class="tab">Admin</button></div>
+    <section id="customerView"><div class="card"><h2>Check your stamps</h2><label>Phone number</label><input id="customerPhone" inputmode="tel" placeholder="04xxxxxxxx" /><button id="checkCustomerBtn">Check stamps</button><div id="customerStatus" class="status"></div><div id="customerResult" class="customerBox hidden"></div></div></section>
+    <section id="adminView" class="hidden"><div id="loginCard" class="card"><h2>Admin login</h2><label>Email</label><input id="adminEmailInput" type="email" placeholder="admin@email.com" /><label>Password</label><input id="adminPasswordInput" type="password" placeholder="Password" /><button id="loginBtn">Login</button><div id="loginStatus" class="status"></div></div><div id="adminPanel" class="hidden"><div class="card"><div class="topbar"><div><strong>Admin Panel</strong><div id="adminEmailLabel" class="adminEmail"></div></div><button id="logoutBtn" class="secondary">Logout</button></div><div class="divider"></div><h3>Add / Update Customer</h3><label>Customer name</label><input id="newName" placeholder="Customer name" /><label>Phone number</label><input id="newPhone" inputmode="tel" placeholder="04xxxxxxxx" /><label>Email optional</label><input id="newEmail" type="email" placeholder="Optional" /><button id="saveCustomerBtn" class="green">Save customer</button><div id="saveStatus" class="status"></div></div><div class="card"><h3>Find Customer</h3><label>Phone number</label><input id="adminSearchPhone" inputmode="tel" placeholder="04xxxxxxxx" /><button id="adminSearchBtn">Search</button><div id="adminSearchStatus" class="status"></div><div id="adminCustomerBox" class="customerBox hidden"></div></div></div></section>
+  </div>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
+    import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, addDoc, getDocs, query, orderBy, limit, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAV_VceNH0c6h8KKwvQOVWj3Pj7KRLZ3co",
+      authDomain: "loyalty-24f4f.firebaseapp.com",
+      projectId: "loyalty-24f4f",
+      storageBucket: "loyalty-24f4f.firebasestorage.app",
+      messagingSenderId: "961541943140",
+      appId: "1:961541943140:web:347b834e3bb0b6a5df1471",
+      measurementId: "G-NPP1MF4G6H"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    const TARGET = 10;
+    const EXPIRY_DAYS = 14;
+    let currentPhone = null;
+
+    const $ = id => document.getElementById(id);
+    const normalizePhone = p => String(p || "").replace(/\s+/g, "").trim();
+    const validPhone = p => /^04\d{8}$/.test(p);
+    const showStatus = (el,msg,type="") => { el.textContent = msg || ""; el.className = "status"; if(type) el.classList.add(type); };
+    const escapeHtml = t => String(t ?? "").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;");
+    const addDays = (date,days) => { const d = new Date(date); d.setDate(d.getDate()+days); return d; };
+    const toDate = v => v?.toDate ? v.toDate() : new Date(v);
+    const formatDate = v => { if(!v) return "-"; const d = toDate(v); if(isNaN(d)) return "-"; return d.toLocaleDateString("en-AU",{day:"2-digit",month:"short",year:"numeric"}); };
+    const activeRewards = (rewards=[]) => rewards.filter(r => !r.used && toDate(r.expiresAt) >= new Date());
+    const expiredRewards = (rewards=[]) => rewards.filter(r => !r.used && toDate(r.expiresAt) < new Date());
+
+    function stampHtml(stamps){
+      let html='<div class="stampGrid">';
+      const current=Math.max(0,Math.min(TARGET,Number(stamps||0)));
+      for(let i=1;i<=TARGET;i++){ html += `<div class="stamp ${i<=current?'on':''}">${i<=current?'★':''}</div>`; }
+      return html+'</div>';
+    }
+
+    async function writeHistory(phone, action, note=""){
+      await addDoc(collection(db,"customers",phone,"history"),{action,note,createdAt:serverTimestamp()});
+    }
+
+    $("customerTab").onclick = () => { $("customerTab").classList.add("active"); $("adminTab").classList.remove("active"); $("customerView").classList.remove("hidden"); $("adminView").classList.add("hidden"); };
+    $("adminTab").onclick = () => { $("adminTab").classList.add("active"); $("customerTab").classList.remove("active"); $("adminView").classList.remove("hidden"); $("customerView").classList.add("hidden"); };
+
+    $("checkCustomerBtn").onclick = async () => {
+      const phone = normalizePhone($("customerPhone").value);
+      $("customerResult").classList.add("hidden");
+      showStatus($("customerStatus"),"");
+      if(!validPhone(phone)) return showStatus($("customerStatus"),"Phone number must start with 04 and have 10 digits.","error");
+      try{
+        const snap = await getDoc(doc(db,"customers",phone));
+        if(!snap.exists()) return showStatus($("customerStatus"),"Customer not found.","error");
+        renderCustomer(snap.data());
+        showStatus($("customerStatus"),"Loaded.","success");
+      }catch(e){ console.error(e); showStatus($("customerStatus"),e.message,"error"); }
+    };
+
+    function renderCustomer(c){
+      const active = activeRewards(c.rewards||[]);
+      const expired = expiredRewards(c.rewards||[]);
+      $("customerResult").innerHTML =
+        `<div class="customerName">${escapeHtml(c.name||"Customer")}</div>
+        <div class="mini">${escapeHtml(c.phone||"")}</div>
+        <div class="bigNumber">${Number(c.stamps||0)}</div>
+        <div class="mini" style="text-align:center;">stamps collected</div>
+        ${stampHtml(c.stamps||0)}
+        <div><span class="pill">🎁 Active rewards: ${active.length}</span><span class="pill">⌛ Expired rewards: ${expired.length}</span></div>
+        ${active.length ? active.map((r,i)=>`<div class="historyItem"><strong>Free reward #${i+1}</strong><br><span class="mini">Expires: ${formatDate(r.expiresAt)}</span></div>`).join("") : `<div class="mini">No active reward yet. Collect ${TARGET} stamps to get 1 free item.</div>`}`;
+      $("customerResult").classList.remove("hidden");
+    }
+
+    $("loginBtn").onclick = async () => {
+      const email=$("adminEmailInput").value.trim();
+      const pass=$("adminPasswordInput").value;
+      showStatus($("loginStatus"),"");
+      if(!email||!pass) return showStatus($("loginStatus"),"Enter email and password.","error");
+      try{ await signInWithEmailAndPassword(auth,email,pass); showStatus($("loginStatus"),"Logged in.","success"); }
+      catch(e){ console.error(e); showStatus($("loginStatus"),e.message,"error"); }
+    };
+
+    $("logoutBtn").onclick = () => signOut(auth);
+
+    onAuthStateChanged(auth, user => {
+      if(user){
+        $("loginCard").classList.add("hidden");
+        $("adminPanel").classList.remove("hidden");
+        $("adminEmailLabel").textContent=user.email;
+      }else{
+        $("loginCard").classList.remove("hidden");
+        $("adminPanel").classList.add("hidden");
+        $("adminEmailLabel").textContent="";
+      }
+    });
+
+    $("saveCustomerBtn").onclick = async () => {
+      const name=$("newName").value.trim();
+      const phone=normalizePhone($("newPhone").value);
+      const email=$("newEmail").value.trim();
+      showStatus($("saveStatus"),"");
+      if(!name) return showStatus($("saveStatus"),"Customer name is required.","error");
+      if(!validPhone(phone)) return showStatus($("saveStatus"),"Phone number must start with 04 and have 10 digits.","error");
+      try{
+        const ref=doc(db,"customers",phone);
+        const priv=doc(db,"customerPrivate",phone);
+        const old=await getDoc(ref);
+        if(old.exists()){
+          await updateDoc(ref,{name,phone,updatedAt:serverTimestamp()});
+          await setDoc(priv,{email,updatedAt:serverTimestamp()},{merge:true});
+          await writeHistory(phone,"Customer updated",`Name: ${name}`);
+          showStatus($("saveStatus"),"Customer updated.","success");
+        }else{
+          await setDoc(ref,{name,phone,stamps:0,rewards:[],createdAt:serverTimestamp(),updatedAt:serverTimestamp()});
+          await setDoc(priv,{email,createdAt:serverTimestamp(),updatedAt:serverTimestamp()});
+          await writeHistory(phone,"Customer created",`Name: ${name}`);
+          showStatus($("saveStatus"),"Customer created.","success");
+        }
+        $("newName").value=""; $("newPhone").value=""; $("newEmail").value="";
+      }catch(e){ console.error(e); showStatus($("saveStatus"),e.message,"error"); }
+    };
+
+    $("adminSearchBtn").onclick = () => loadAdminCustomer(normalizePhone($("adminSearchPhone").value));
+
+    async function loadAdminCustomer(phone){
+      currentPhone=null;
+      $("adminCustomerBox").classList.add("hidden");
+      showStatus($("adminSearchStatus"),"");
+      if(!validPhone(phone)) return showStatus($("adminSearchStatus"),"Phone number must start with 04 and have 10 digits.","error");
+      try{
+        const snap=await getDoc(doc(db,"customers",phone));
+        if(!snap.exists()) return showStatus($("adminSearchStatus"),"Customer not found.","error");
+        const priv=await getDoc(doc(db,"customerPrivate",phone));
+        const hq=query(collection(db,"customers",phone,"history"),orderBy("createdAt","desc"),limit(10));
+        const hs=await getDocs(hq);
+        const history=[];
+        hs.forEach(d=>history.push(d.data()));
+        currentPhone=phone;
+        renderAdmin({...snap.data(), email: priv.exists() ? (priv.data().email||"") : "", history});
+        showStatus($("adminSearchStatus"),"Loaded.","success");
+      }catch(e){ console.error(e); showStatus($("adminSearchStatus"),e.message,"error"); }
+    }
+
+    function renderAdmin(c){
+      const rewards=c.rewards||[];
+      const active=activeRewards(rewards);
+      $("adminCustomerBox").innerHTML =
+        `<div class="customerName">${escapeHtml(c.name||"Customer")}</div>
+        <div class="mini">${escapeHtml(c.phone||"")}</div>
+        <div class="mini">${c.email?"Email: "+escapeHtml(c.email):"No email"}</div>
+        <div class="bigNumber">${Number(c.stamps||0)}</div>
+        <div class="mini" style="text-align:center;">current stamps</div>
+        ${stampHtml(c.stamps||0)}
+        <div><span class="pill">🎁 Active: ${active.length}</span><span class="pill">Total rewards: ${rewards.length}</span></div>
+        <div class="row"><button id="addStampBtn" class="green">+ Stamp</button><button id="removeStampBtn" class="red">- Stamp</button></div>
+        <button id="useRewardBtn" class="yellow">Use 1 Reward</button>
+        <div class="divider"></div><h3>Rewards</h3>
+        ${rewards.length ? rewards.map((r,i)=>`<div class="historyItem"><strong>Reward #${i+1}</strong><br><span class="mini">Status: ${r.used?"Used":(active.includes(r)?"Active":"Expired")}<br>Expires: ${formatDate(r.expiresAt)}</span></div>`).join("") : `<div class="mini">No rewards yet.</div>`}
+        <div class="divider"></div><h3>Recent History</h3>
+        ${c.history?.length ? c.history.map(h=>`<div class="historyItem"><strong>${escapeHtml(h.action||"")}</strong><br><span class="mini">${escapeHtml(h.note||"")}<br>${formatDate(h.createdAt)}</span></div>`).join("") : `<div class="mini">No history yet.</div>`}`;
+      $("adminCustomerBox").classList.remove("hidden");
+      $("addStampBtn").onclick=addStamp;
+      $("removeStampBtn").onclick=removeStamp;
+      $("useRewardBtn").onclick=useReward;
+    }
+
+    async function addStamp(){
+      if(!currentPhone) return;
+      try{
+        const ref=doc(db,"customers",currentPhone);
+        const snap=await getDoc(ref);
+        if(!snap.exists()) return;
+        const c=snap.data();
+        let stamps=Number(c.stamps||0)+1;
+        const rewards=c.rewards||[];
+        let note="+1 stamp";
+        if(stamps>=TARGET){
+          stamps-=TARGET;
+          const now=new Date();
+          rewards.push({createdAt:now.toISOString(),expiresAt:addDays(now,EXPIRY_DAYS).toISOString(),used:false,usedAt:null});
+          note="+1 stamp, converted 10 stamps to 1 free reward";
+        }
+        await updateDoc(ref,{stamps,rewards,updatedAt:serverTimestamp()});
+        await writeHistory(currentPhone,"Stamp added",note);
+        await loadAdminCustomer(currentPhone);
+      }catch(e){ console.error(e); showStatus($("adminSearchStatus"),e.message,"error"); }
+    }
+
+    async function removeStamp(){
+      if(!currentPhone) return;
+      try{
+        const ref=doc(db,"customers",currentPhone);
+        const snap=await getDoc(ref);
+        if(!snap.exists()) return;
+        const stamps=Math.max(0,Number(snap.data().stamps||0)-1);
+        await updateDoc(ref,{stamps,updatedAt:serverTimestamp()});
+        await writeHistory(currentPhone,"Stamp removed","-1 stamp");
+        await loadAdminCustomer(currentPhone);
+      }catch(e){ console.error(e); showStatus($("adminSearchStatus"),e.message,"error"); }
+    }
+
+    async function useReward(){
+      if(!currentPhone) return;
+      try{
+        const ref=doc(db,"customers",currentPhone);
+        const snap=await getDoc(ref);
+        if(!snap.exists()) return;
+        const rewards=snap.data().rewards||[];
+        const now=new Date();
+        const idx=rewards.findIndex(r=>!r.used && toDate(r.expiresAt)>=now);
+        if(idx===-1) return showStatus($("adminSearchStatus"),"No active reward available.","error");
+        rewards[idx].used=true;
+        rewards[idx].usedAt=now.toISOString();
+        await updateDoc(ref,{rewards,updatedAt:serverTimestamp()});
+        await writeHistory(currentPhone,"Reward used","1 free reward redeemed");
+        await loadAdminCustomer(currentPhone);
+      }catch(e){ console.error(e); showStatus($("adminSearchStatus"),e.message,"error"); }
+    }
+  </script>
+</body>
+</html>
