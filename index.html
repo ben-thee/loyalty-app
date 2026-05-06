@@ -66,7 +66,7 @@ function stampHtml(stamps){let html='<div class="stampGrid">';const current=Math
 async function writeHistory(phone,action,note=""){await addDoc(collection(db,"customers",phone,"history"),{action,note,createdAt:serverTimestamp()})}
 function sendStampEmailInBackground(phone,rewardCreated){fetch(EMAIL_WEB_APP_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({secret:EMAIL_SECRET,phone,rewardCreated:rewardCreated===true})}).catch(err=>console.log("Email send failed:",err))}
 function showCustomerView(){$("appTitle").textContent="B-Side";$("tabsBar").classList.add("hidden");$("customerView").classList.remove("hidden");$("adminView").classList.add("hidden")}
-function showAdminView(){$("appTitle").textContent="B-Side Admin";$("tabsBar").classList.remove("hidden");$("adminView").classList.remove("hidden");$("customerView").classList.add("hidden");$("adminTab").classList.add("active");$("customerTab").classList.remove("active")}
+function showAdminView(){$("appTitle").textContent="B-Side Admin";$("tabsBar").classList.add("hidden");$("adminView").classList.remove("hidden");$("customerView").classList.add("hidden");$("adminTab").classList.add("active");$("customerTab").classList.remove("active")}
 $("customerTab").onclick=()=>{history.replaceState(null,"",location.pathname+"?view=customer");showCustomerView()};
 $("adminTab").onclick=()=>{history.replaceState(null,"",location.pathname+"?view=admin");showAdminView()};
 (new URLSearchParams(location.search).get("view")==="admin")?showAdminView():showCustomerView();
