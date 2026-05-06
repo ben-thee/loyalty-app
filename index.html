@@ -22,10 +22,34 @@
 <body>
   <div class="app">
     <div class="logo">★</div>
-    <h1>Stamp Loyalty</h1>
+    <h1 id="appTitle">B-Side</h1>
     <div class="sub">10 stamps = 1 free reward · reward expires in 14 days</div>
-    <div class="tabs"><button id="customerTab" class="tab active">Customer</button><button id="adminTab" class="tab">Admin</button></div>
-    <section id="customerView"><div class="card"><h2>Check your stamps</h2><label>Phone number</label><input id="customerPhone" inputmode="tel" placeholder="04xxxxxxxx" /><button id="checkCustomerBtn">Check stamps</button><div id="customerStatus" class="status"></div><div id="customerResult" class="customerBox hidden"></div></div></section>
+    <div id="tabsBar" class="tabs"><button id="customerTab" class="tab active">Customer</button><button id="adminTab" class="tab">Admin</button></div>
+    <section id="customerView">
+      <div class="card">
+        <h2>Check your stamps</h2>
+        <label>Phone number</label>
+        <input id="customerPhone" inputmode="tel" placeholder="04xxxxxxxx" />
+        <button id="checkCustomerBtn">Check stamps</button>
+        <div id="customerStatus" class="status"></div>
+        <div id="customerResult" class="customerBox hidden"></div>
+      </div>
+
+      <div class="card">
+        <h2>Register</h2>
+        <label>Your name</label>
+        <input id="registerName" placeholder="Your name" />
+
+        <label>Phone number</label>
+        <input id="registerPhone" inputmode="tel" placeholder="04xxxxxxxx" />
+
+        <label>Email optional</label>
+        <input id="registerEmail" type="email" placeholder="Optional" />
+
+        <button id="registerBtn" class="green">Register</button>
+        <div id="registerStatus" class="status"></div>
+      </div>
+    </section>
     <section id="adminView" class="hidden"><div id="loginCard" class="card"><h2>Admin login</h2><label>Email</label><input id="adminEmailInput" type="email" placeholder="admin@email.com" /><label>Password</label><input id="adminPasswordInput" type="password" placeholder="Password" /><button id="loginBtn">Login</button><div id="loginStatus" class="status"></div></div><div id="adminPanel" class="hidden"><div class="card"><div class="topbar"><div><strong>Admin Panel</strong><div id="adminEmailLabel" class="adminEmail"></div></div><button id="logoutBtn" class="secondary">Logout</button></div><div class="divider"></div><h3>Add / Update Customer</h3><label>Customer name</label><input id="newName" placeholder="Customer name" /><label>Phone number</label><input id="newPhone" inputmode="tel" placeholder="04xxxxxxxx" /><label>Email optional</label><input id="newEmail" type="email" placeholder="Optional" /><button id="saveCustomerBtn" class="green">Save customer</button><div id="saveStatus" class="status"></div></div><div class="card"><h3>Find Customer</h3><label>Phone number</label><input id="adminSearchPhone" inputmode="tel" placeholder="04xxxxxxxx" /><button id="adminSearchBtn">Search</button><div id="adminSearchStatus" class="status"></div><div id="adminCustomerBox" class="customerBox hidden"></div></div></div></section>
   </div>
   <script type="module">
@@ -73,6 +97,8 @@
     }
 
     function showCustomerView(){
+      $("appTitle").textContent = "B-Side";
+      $("tabsBar").classList.add("hidden");
       $("customerTab").classList.add("active");
       $("adminTab").classList.remove("active");
       $("customerView").classList.remove("hidden");
@@ -80,6 +106,8 @@
     }
 
     function showAdminView(){
+      $("appTitle").textContent = "B-Side Admin";
+      $("tabsBar").classList.remove("hidden");
       $("adminTab").classList.add("active");
       $("customerTab").classList.remove("active");
       $("adminView").classList.remove("hidden");
@@ -129,6 +157,60 @@
         ${active.length ? active.map((r,i)=>`<div class="historyItem"><strong>Free reward #${i+1}</strong><br><span class="mini">Expires: ${formatDate(r.expiresAt)}</span></div>`).join("") : `<div class="mini">No active reward yet. Collect ${TARGET} stamps to get 1 free item.</div>`}`;
       $("customerResult").classList.remove("hidden");
     }
+
+    $("registerBtn").onclick = async () => {
+      const name = $("registerName").value.trim();
+      const phone = normalizePhone($("registerPhone").value);
+      const email = $("registerEmail").value.trim();
+
+      showStatus($("registerStatus"), "");
+
+      if (!name) {
+        return showStatus($("registerStatus"), "Please enter your name.", "error");
+      }
+
+      if (!validPhone(phone)) {
+        return showStatus($("registerStatus"), "Phone number must start with 04 and have 10 digits.", "error");
+      }
+
+      try {
+        const ref = doc(db, "customers", phone);
+        const existing = await getDoc(ref);
+
+        if (existing.exists()) {
+          return showStatus($("registerStatus"), "This phone number is already registered. Please check your stamps above.", "error");
+        }
+
+        await setDoc(ref, {
+          name,
+          phone,
+          stamps: 0,
+          rewards: [],
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp(),
+          registeredBy: "customer"
+        });
+
+        if (email) {
+          await setDoc(doc(db, "customerPrivate", phone), {
+            email,
+            createdAt: serverTimestamp(),
+            updatedAt: serverTimestamp(),
+            registeredBy: "customer"
+          }, { merge: true });
+        }
+
+        $("registerName").value = "";
+        $("registerPhone").value = "";
+        $("registerEmail").value = "";
+        $("customerPhone").value = phone;
+
+        showStatus($("registerStatus"), "Registered successfully. You can now check your stamps.", "success");
+      } catch (e) {
+        console.error(e);
+        showStatus($("registerStatus"), e.message, "error");
+      }
+    };
 
     $("loginBtn").onclick = async () => {
       const email=$("adminEmailInput").value.trim();
