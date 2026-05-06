@@ -74,6 +74,9 @@
     const EXPIRY_DAYS = 14;
     let currentPhone = null;
 
+    const EMAIL_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyNMGf3Tx2swO1cFtZ4UqdF8RZysTUlMKKBBCiO8677Sc6brCwqAihfQcXY0W-NVzjqPg/exec";
+    const EMAIL_SECRET = "25372537";
+
     const $ = id => document.getElementById(id);
     const normalizePhone = p => String(p || "").replace(/\s+/g, "").trim();
     const validPhone = p => /^04\d{8}$/.test(p);
@@ -94,6 +97,27 @@
 
     async function writeHistory(phone, action, note=""){
       await addDoc(collection(db,"customers",phone,"history"),{action,note,createdAt:serverTimestamp()});
+    }
+
+    function sendStampEmailInBackground(phone, rewardCreated) {
+      if (!EMAIL_WEB_APP_URL || EMAIL_WEB_APP_URL.includes("PASTE_")) {
+        return;
+      }
+
+      fetch(EMAIL_WEB_APP_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: {
+          "Content-Type": "text/plain;charset=utf-8"
+        },
+        body: JSON.stringify({
+          secret: EMAIL_SECRET,
+          phone,
+          rewardCreated: rewardCreated === true
+        })
+      }).catch(err => {
+        console.log("Email send failed:", err);
+      });
     }
 
     function showCustomerView(){
@@ -323,6 +347,10 @@
         }
         await updateDoc(ref,{stamps,rewards,updatedAt:serverTimestamp()});
         await writeHistory(currentPhone,"Stamp added",note);
+
+        const rewardCreated = note.includes("converted");
+        sendStampEmailInBackground(currentPhone, rewardCreated);
+
         await loadAdminCustomer(currentPhone);
       }catch(e){ console.error(e); showStatus($("adminSearchStatus"),e.message,"error"); }
     }
