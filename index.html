@@ -72,8 +72,36 @@
       await addDoc(collection(db,"customers",phone,"history"),{action,note,createdAt:serverTimestamp()});
     }
 
-    $("customerTab").onclick = () => { $("customerTab").classList.add("active"); $("adminTab").classList.remove("active"); $("customerView").classList.remove("hidden"); $("adminView").classList.add("hidden"); };
-    $("adminTab").onclick = () => { $("adminTab").classList.add("active"); $("customerTab").classList.remove("active"); $("adminView").classList.remove("hidden"); $("customerView").classList.add("hidden"); };
+    function showCustomerView(){
+      $("customerTab").classList.add("active");
+      $("adminTab").classList.remove("active");
+      $("customerView").classList.remove("hidden");
+      $("adminView").classList.add("hidden");
+    }
+
+    function showAdminView(){
+      $("adminTab").classList.add("active");
+      $("customerTab").classList.remove("active");
+      $("adminView").classList.remove("hidden");
+      $("customerView").classList.add("hidden");
+    }
+
+    $("customerTab").onclick = () => {
+      history.replaceState(null, "", location.pathname + "?view=customer");
+      showCustomerView();
+    };
+
+    $("adminTab").onclick = () => {
+      history.replaceState(null, "", location.pathname + "?view=admin");
+      showAdminView();
+    };
+
+    const initialView = new URLSearchParams(window.location.search).get("view");
+    if (initialView === "admin") {
+      showAdminView();
+    } else {
+      showCustomerView();
+    }
 
     $("checkCustomerBtn").onclick = async () => {
       const phone = normalizePhone($("customerPhone").value);
