@@ -1,637 +1,1248 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
   <title>B-Side Loyalty</title>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+
   <style>
     :root {
-      --cream: #f5f0e8;
-      --warm-white: #faf8f4;
-      --espresso: #1a1008;
-      --dark-roast: #2c1a0e;
-      --mocha: #4a2e1a;
-      --caramel: #b5793a;
-      --gold: #c9963e;
-      --gold-light: #e8c47a;
-      --gold-pale: #f0ddb0;
-      --latte: #d4b896;
-      --dusty-rose: #c8998a;
-      --sage: #8a9e8c;
-      --text: #1a1008;
-      --text-mid: #4a3728;
-      --text-muted: #8a7060;
-      --line: rgba(180, 140, 90, 0.2);
-      --line-strong: rgba(180, 140, 90, 0.4);
-      --card-bg: rgba(250, 248, 244, 0.92);
-      --green: #5a8a5c;
-      --yellow: #c9963e;
-      --red: #a84040;
+      --bg: #f4eee6;
+      --bg2: #fffdf8;
+      --paper: #fffdf8;
+      --card: rgba(255, 255, 255, .96);
+      --ink: #201711;
+      --coffee: #2f2118;
+      --mocha: #6b4a32;
+      --muted: #927966;
+      --line: #eadcc8;
+      --gold: #a8783e;
+      --gold2: #d8b979;
+      --cream: #fff7ea;
+      --green: #5f8062;
+      --red: #ad5048;
+      --shadow: 0 16px 42px rgba(69, 42, 21, .10);
+      --radius: 26px;
     }
 
-```
-* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
 
-body {
-  margin: 0;
-  min-height: 100vh;
-  background-color: var(--espresso);
-  background-image:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80'%3E%3Cpath d='M0 0h80v80H0z' fill='none'/%3E%3Ccircle cx='40' cy='40' r='0.8' fill='rgba(180,140,90,0.12)'/%3E%3Ccircle cx='0' cy='0' r='0.8' fill='rgba(180,140,90,0.12)'/%3E%3Ccircle cx='80' cy='0' r='0.8' fill='rgba(180,140,90,0.12)'/%3E%3Ccircle cx='0' cy='80' r='0.8' fill='rgba(180,140,90,0.12)'/%3E%3Ccircle cx='80' cy='80' r='0.8' fill='rgba(180,140,90,0.12)'/%3E%3C/svg%3E"),
-    radial-gradient(ellipse at 20% 0%, rgba(201,150,62,0.18) 0%, transparent 55%),
-    radial-gradient(ellipse at 80% 100%, rgba(74,46,26,0.6) 0%, transparent 55%),
-    linear-gradient(160deg, #1a1008 0%, #2c1a0e 50%, #1a1008 100%);
-  color: var(--text);
-  font-family: 'Jost', sans-serif;
-  font-weight: 300;
-  padding: 20px 16px 40px;
-}
+    html { scroll-behavior: auto; }
 
-.app { max-width: 480px; margin: 0 auto; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at 50% -18%, rgba(216,185,121,.34), transparent 34%),
+        linear-gradient(180deg, var(--bg2), var(--bg));
+      color: var(--ink);
+      font-family: Manrope, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      padding: 18px;
+    }
 
-/* ── Header ── */
-.header {
-  text-align: center;
-  padding: 12px 0 28px;
-  position: relative;
-}
-.header::before {
-  content: '';
-  display: block;
-  width: 1px;
-  height: 36px;
-  background: linear-gradient(to bottom, transparent, var(--gold));
-  margin: 0 auto 20px;
-}
+    .app {
+      max-width: 620px;
+      margin: 0 auto;
+      padding-bottom: 44px;
+    }
 
-.logo-wrap {
-  width: 88px;
-  height: 88px;
-  border-radius: 50%;
-  background: var(--cream);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0 auto 16px;
-  box-shadow:
-    0 0 0 1px var(--gold-light),
-    0 0 0 6px rgba(201,150,62,0.12),
-    0 20px 50px rgba(0,0,0,0.5);
-  overflow: hidden;
-  padding: 10px;
-  position: relative;
-}
-.logo-wrap::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  background: radial-gradient(circle at 30% 25%, rgba(255,255,255,0.15), transparent 60%);
-  pointer-events: none;
-}
-.logo-wrap img { width: 100%; height: 100%; object-fit: contain; display: block; }
+    .brand {
+      text-align: center;
+      padding: 16px 0 18px;
+    }
 
-h1 {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 38px;
-  font-weight: 400;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--cream);
-  margin: 0 0 4px;
-  line-height: 1;
-}
-.tagline {
-  font-size: 11px;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color: var(--gold);
-  margin: 0 0 6px;
-}
-.sub {
-  font-size: 12px;
-  color: rgba(212,184,150,0.6);
-  letter-spacing: 0.06em;
-  margin: 0;
-}
+    .logo {
+      width: 124px;
+      height: 124px;
+      margin: 0 auto 14px;
+      border-radius: 30px;
+      background: #fff;
+      padding: 13px;
+      border: 1px solid rgba(185,138,74,.26);
+      box-shadow: 0 14px 34px rgba(83, 51, 24, .13);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
 
-.ornament {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin: 20px 0 0;
-}
-.ornament::before, .ornament::after {
-  content: '';
-  flex: 1;
-  height: 1px;
-  background: linear-gradient(to right, transparent, var(--gold-light), transparent);
-}
-.ornament span {
-  color: var(--gold);
-  font-size: 16px;
-  opacity: 0.8;
-}
+    .logo img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+      background: #fff;
+    }
 
-/* ── Tabs ── */
-.tabs {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0;
-  margin-bottom: 20px;
-  border: 1px solid var(--line-strong);
-  border-radius: 4px;
-  overflow: hidden;
-  background: rgba(26,16,8,0.6);
-}
-.tab {
-  border: none;
-  background: transparent;
-  color: rgba(212,184,150,0.55);
-  padding: 13px;
-  font-family: 'Jost', sans-serif;
-  font-size: 11px;
-  font-weight: 500;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  position: relative;
-}
-.tab:first-child { border-right: 1px solid var(--line-strong); }
-.tab.active {
-  background: linear-gradient(135deg, rgba(201,150,62,0.15), rgba(201,150,62,0.08));
-  color: var(--gold-light);
-}
-.tab.active::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 20%;
-  right: 20%;
-  height: 1px;
-  background: var(--gold);
-}
+    h1 {
+      font-family: "Playfair Display", Georgia, serif;
+      margin: 0;
+      color: var(--coffee);
+      font-size: 40px;
+      line-height: 1;
+      font-weight: 700;
+      letter-spacing: -.025em;
+    }
 
-/* ── Cards ── */
-.card {
-  background: var(--card-bg);
-  border: 1px solid var(--line-strong);
-  border-radius: 6px;
-  padding: 24px 22px;
-  margin-bottom: 14px;
-  position: relative;
-  overflow: hidden;
-}
-.card::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 1px;
-  background: linear-gradient(to right, transparent, var(--gold-light), transparent);
-  opacity: 0.5;
-}
+    .sub {
+      margin: 9px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 600;
+    }
 
-h2 {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 22px;
-  font-weight: 400;
-  letter-spacing: 0.06em;
-  color: var(--espresso);
-  margin: 0 0 16px;
-}
-h3 {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 18px;
-  font-weight: 400;
-  letter-spacing: 0.06em;
-  color: var(--espresso);
-  margin: 0 0 14px;
-}
+    .hidden { display: none !important; }
 
-label {
-  display: block;
-  font-size: 10px;
-  font-weight: 500;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--text-muted);
-  margin: 14px 0 6px;
-}
+    .tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin: 0 0 16px;
+    }
 
-input {
-  width: 100%;
-  background: var(--warm-white);
-  color: var(--espresso);
-  border: 1px solid var(--line-strong);
-  border-bottom: 1px solid var(--caramel);
-  border-radius: 3px;
-  padding: 13px 14px;
-  font-family: 'Jost', sans-serif;
-  font-size: 15px;
-  font-weight: 300;
-  outline: none;
-  transition: border-color 0.2s;
-}
-input:focus { border-color: var(--gold); border-bottom-color: var(--gold); }
-input::placeholder { color: var(--latte); font-size: 13px; }
+    .tab {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 14px;
+      background: rgba(255,255,255,.72);
+      color: var(--mocha);
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      box-shadow: 0 8px 22px rgba(69, 42, 21, .06);
+    }
 
-/* ── Buttons ── */
-button {
-  width: 100%;
-  border: none;
-  border-radius: 3px;
-  padding: 14px;
-  margin-top: 12px;
-  font-family: 'Jost', sans-serif;
-  font-size: 11px;
-  font-weight: 500;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  cursor: pointer;
-  transition: all 0.25s ease;
-  position: relative;
-  overflow: hidden;
-}
-button::after {
-  content: '';
-  position: absolute;
-  top: 0; left: -100%;
-  width: 100%; height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
-  transition: left 0.4s ease;
-}
-button:hover::after { left: 100%; }
+    .tab.active {
+      color: #fff;
+      border-color: transparent;
+      background: linear-gradient(135deg, var(--coffee), var(--gold));
+      box-shadow: 0 14px 34px rgba(82, 48, 19, .20);
+    }
 
-/* Primary */
-button:not(.secondary):not(.green):not(.yellow):not(.red) {
-  background: linear-gradient(135deg, var(--caramel), var(--gold));
-  color: var(--cream);
-  box-shadow: 0 4px 16px rgba(180,120,50,0.3);
-}
-button:not(.secondary):not(.green):not(.yellow):not(.red):hover {
-  box-shadow: 0 6px 22px rgba(180,120,50,0.45);
-  transform: translateY(-1px);
-}
+    .card {
+      position: relative;
+      background: var(--card);
+      border: 1px solid rgba(185,138,74,.24);
+      border-radius: var(--radius);
+      padding: 21px;
+      margin-bottom: 16px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(16px);
+      overflow: hidden;
+    }
 
-button.secondary {
-  background: transparent;
-  border: 1px solid var(--line-strong);
-  color: var(--text-muted);
-}
-button.secondary:hover { border-color: var(--caramel); color: var(--mocha); }
+    .card::before {
+      content: "";
+      position: absolute;
+      inset: 0 0 auto 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(185,138,74,.55), transparent);
+    }
 
-button.green {
-  background: linear-gradient(135deg, #4a7a4c, var(--sage));
-  color: var(--cream);
-  box-shadow: 0 4px 14px rgba(90,138,92,0.25);
-}
-button.yellow {
-  background: linear-gradient(135deg, #a07828, var(--gold));
-  color: var(--cream);
-  box-shadow: 0 4px 14px rgba(180,130,50,0.25);
-}
-button.red {
-  background: linear-gradient(135deg, #7a3030, #a84040);
-  color: var(--cream);
-  box-shadow: 0 4px 14px rgba(168,64,64,0.25);
-}
-button.small { padding: 11px; margin-top: 0; font-size: 18px; letter-spacing: 0; }
+    h2, h3 {
+      font-family: "Playfair Display", Georgia, serif;
+      color: var(--coffee);
+      letter-spacing: -.025em;
+      margin: 0 0 14px;
+      line-height: 1.1;
+    }
 
-.row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.row3 { display: grid; grid-template-columns: 52px 1fr 52px; gap: 10px; align-items: end; }
-.hidden { display: none !important; }
+    h2 { font-size: 27px; font-weight: 700; }
+    h3 { font-size: 22px; font-weight: 700; }
 
-/* ── Status ── */
-.status {
-  min-height: 20px;
-  font-size: 12px;
-  margin-top: 10px;
-  letter-spacing: 0.06em;
-  color: var(--text-muted);
-  line-height: 1.5;
-}
-.error { color: #9a3a3a; }
-.success { color: #4a7a4c; }
+    label {
+      display: block;
+      margin: 14px 0 7px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
 
-/* ── Stamp display ── */
-.bigNumber {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 72px;
-  font-weight: 300;
-  text-align: center;
-  line-height: 1;
-  margin: 12px 0 2px;
-  color: var(--espresso);
-  letter-spacing: -0.02em;
-}
+    input {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: #fff;
+      color: var(--ink);
+      padding: 16px;
+      font-size: 16px;
+      font-family: Manrope, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      outline: none;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.9);
+    }
 
-.stampGrid {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 7px;
-  margin: 16px 0;
-}
-.stamp {
-  aspect-ratio: 1;
-  border-radius: 50%;
-  border: 1px solid var(--line-strong);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--warm-white);
-  transition: all 0.3s ease;
-  position: relative;
-}
-.stamp.on {
-  background: var(--cream);
-  border-color: var(--gold);
-  box-shadow: 0 0 0 3px rgba(201,150,62,0.15), inset 0 1px 2px rgba(255,255,255,0.5);
-}
-.stamp.on::before {
-  content: '';
-  position: absolute;
-  inset: 2px;
-  border-radius: 50%;
-  background: radial-gradient(circle at 35% 30%, rgba(255,255,255,0.4), transparent 60%);
-  pointer-events: none;
-}
-.stamp img { width: 68%; height: 68%; object-fit: contain; display: block; position: relative; z-index: 1; }
+    input:focus {
+      border-color: var(--gold);
+      box-shadow: 0 0 0 4px rgba(185,138,74,.13);
+    }
 
-/* ── Customer box ── */
-.customerBox {
-  background: var(--warm-white);
-  border: 1px solid var(--line-strong);
-  border-radius: 4px;
-  padding: 18px;
-  margin-top: 14px;
-}
-.customerName {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 24px;
-  font-weight: 400;
-  color: var(--espresso);
-  letter-spacing: 0.04em;
-  margin-bottom: 3px;
-}
+    button {
+      width: 100%;
+      border: 0;
+      border-radius: 18px;
+      margin-top: 12px;
+      padding: 16px;
+      color: #fff;
+      background: linear-gradient(135deg, var(--coffee), var(--gold));
+      font-family: Manrope, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 14px;
+      font-weight: 900;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      box-shadow: 0 14px 30px rgba(74, 44, 18, .14);
+      cursor: pointer;
+    }
 
-.pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  border-radius: 2px;
-  padding: 5px 10px;
-  background: var(--cream);
-  border: 1px solid var(--line-strong);
-  color: var(--text-muted);
-  font-size: 11px;
-  letter-spacing: 0.08em;
-  margin: 4px 4px 4px 0;
-}
+    button:active { transform: scale(.985); }
 
-.mini { color: var(--text-muted); font-size: 12px; line-height: 1.6; letter-spacing: 0.04em; }
+    button.secondary {
+      color: var(--coffee);
+      background: #fff;
+      border: 1px solid var(--line);
+      box-shadow: 0 10px 24px rgba(74, 44, 18, .06);
+    }
 
-.notice {
-  background: rgba(201,150,62,0.07);
-  border: 1px solid rgba(201,150,62,0.25);
-  border-left: 3px solid var(--gold);
-  color: var(--mocha);
-  border-radius: 3px;
-  padding: 11px 13px;
-  font-size: 12px;
-  line-height: 1.6;
-  margin: 12px 0;
-  letter-spacing: 0.03em;
-}
+    button.green { background: linear-gradient(135deg, #4f7655, #87a578); }
+    button.red { background: linear-gradient(135deg, #93423c, #c96e62); }
+    button.yellow {
+      background: linear-gradient(135deg, #a87938, #d9bb81);
+      color: #21160f;
+    }
 
-.historyItem {
-  border-bottom: 1px solid var(--line);
-  padding: 10px 0;
-  font-size: 12px;
-  letter-spacing: 0.04em;
-}
-.historyItem:last-child { border-bottom: none; }
-.historyItem strong { color: var(--mocha); font-weight: 500; font-size: 12px; }
+    button.small {
+      padding: 13px 8px;
+      margin-top: 0;
+      font-size: 20px;
+      border-radius: 16px;
+      letter-spacing: 0;
+    }
 
-.topbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 0;
-}
-.topbar button { width: auto; padding: 9px 16px; margin: 0; }
+    .notice {
+      margin: 12px 0 14px;
+      padding: 13px 15px;
+      border-radius: 20px;
+      border: 1px solid #ead5b6;
+      background: #fff6e8;
+      color: #745535;
+      font-size: 13px;
+      line-height: 1.55;
+      font-weight: 650;
+    }
 
-.divider {
-  height: 1px;
-  background: linear-gradient(to right, transparent, var(--line-strong), transparent);
-  margin: 18px 0;
-}
+    .rules {
+      margin-top: 16px;
+      padding: 16px;
+      border-radius: 22px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.72);
+    }
 
-.adminEmail { color: var(--text-muted); font-size: 11px; letter-spacing: 0.08em; margin-top: 2px; }
-.adminLabel { color: var(--mocha); font-weight: 500; font-size: 13px; letter-spacing: 0.06em; }
+    .rulesTitle {
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 8px;
+    }
 
-/* Admin card dark variant */
-#adminPanel > .card:first-child {
-  background: linear-gradient(135deg, rgba(44,26,14,0.96), rgba(26,16,8,0.98));
-  border-color: var(--gold);
-  color: var(--cream);
-}
-#adminPanel > .card:first-child .adminLabel { color: var(--gold-light); }
-#adminPanel > .card:first-child .adminEmail { color: var(--latte); opacity: 0.7; }
+    .rules ol {
+      margin: 0;
+      padding-left: 20px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.65;
+      font-weight: 650;
+    }
 
-/* Batch amount input special */
-#batchAmountInput {
-  text-align: center;
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 32px;
-  font-weight: 300;
-  color: var(--espresso);
-  letter-spacing: -0.02em;
-}
+    .status {
+      min-height: 23px;
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 650;
+      line-height: 1.45;
+    }
 
-/* reward items */
-.reward-active { background: rgba(90,138,92,0.08); border-left: 3px solid var(--sage); padding: 8px 10px; border-radius: 2px; margin-bottom: 6px; }
-.reward-expired { opacity: 0.5; padding: 8px 0; }
+    .error { color: var(--red); }
+    .success { color: var(--green); }
 
-/* Decorative corner */
-.card-deco {
-  position: absolute;
-  top: 10px; right: 14px;
-  color: rgba(201,150,62,0.15);
-  font-size: 32px;
-  pointer-events: none;
-  font-family: 'Cormorant Garamond', serif;
-  font-style: italic;
-}
-```
+    .customerBox {
+      margin-top: 15px;
+      border: 1px solid rgba(185,138,74,.28);
+      border-radius: 26px;
+      padding: 18px;
+      background: rgba(255,250,242,.78);
+    }
 
+    .customerName {
+      color: var(--coffee);
+      font-family: "Playfair Display", Georgia, serif;
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: -.03em;
+      margin-bottom: 4px;
+    }
+
+    .bigNumber {
+      margin: 14px 0 4px;
+      color: var(--coffee);
+      font-family: "Playfair Display", Georgia, serif;
+      font-size: 70px;
+      font-weight: 700;
+      letter-spacing: -.06em;
+      line-height: 1;
+      text-align: center;
+    }
+
+    .mini {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.55;
+      font-weight: 650;
+    }
+
+    .stampGrid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
+      margin: 18px 0;
+    }
+
+    .stamp {
+      aspect-ratio: 1;
+      border-radius: 999px;
+      border: 2px solid #dac8b1;
+      background: rgba(255,255,255,.72);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      padding: 7px;
+    }
+
+    .stamp.on {
+      background: #fff;
+      border-color: var(--gold);
+      box-shadow: inset 0 0 0 2px #fff, 0 8px 18px rgba(185,138,74,.22);
+    }
+
+    .stamp img {
+      width: 82%;
+      height: 82%;
+      object-fit: contain;
+      display: block;
+      background: #fff;
+      border-radius: 999px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 8px 11px;
+      background: #fff;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+      margin: 4px 4px 4px 0;
+    }
+
+    .historyItem {
+      padding: 11px 0;
+      border-bottom: 1px solid var(--line);
+      font-size: 13px;
+    }
+
+    .historyItem:last-child { border-bottom: 0; }
+
+    .divider {
+      height: 1px;
+      margin: 18px 0;
+      background: linear-gradient(90deg, transparent, var(--line), transparent);
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .topbar button {
+      width: auto;
+      padding: 10px 14px;
+      margin: 0;
+      font-size: 12px;
+    }
+
+    .adminEmail {
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 3px;
+      max-width: 360px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .row3 {
+      display: grid;
+      grid-template-columns: 58px 1fr 58px;
+      gap: 10px;
+      align-items: end;
+    }
+
+    .buttonGrid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .amountInput {
+      text-align: center;
+      font-family: "Playfair Display", Georgia, serif;
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--coffee);
+    }
+
+    .badge {
+      display: inline-block;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 7px 10px;
+      background: #fff;
+      color: var(--gold);
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .titleRow {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .checkboxRow {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 12px;
+      padding: 12px 13px;
+      border-radius: 18px;
+      background: rgba(255,250,242,.88);
+      border: 1px solid var(--line);
+      color: var(--mocha);
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .checkboxRow input {
+      width: 20px;
+      height: 20px;
+      accent-color: var(--gold);
+      padding: 0;
+      box-shadow: none;
+    }
+
+    @media (max-width: 430px) {
+      body { padding: 14px; }
+      .logo { width: 112px; height: 112px; }
+      .card { padding: 19px; border-radius: 26px; }
+      h1 { font-size: 38px; }
+      .bigNumber { font-size: 64px; }
+      .stampGrid { gap: 8px; }
+      button { font-size: 13px; }
+    }
   </style>
 </head>
+
 <body>
-<div class="app">
-
-  <!-- Header -->
-
-  <div class="header">
-    <div class="logo-wrap">
-      <img src="https://drive.google.com/thumbnail?id=1Z-bUnBA-mZiyab2B_HuQQ4OSvfQYI6Nr&sz=w1000" alt="B-Side logo">
-    </div>
-    <h1 id="appTitle">B-Side</h1>
-    <p class="tagline">Loyalty Programme</p>
-    <p class="sub">10 stamps — 1 complimentary reward · expires in 14 days</p>
-    <div class="ornament"><span>✦</span></div>
-  </div>
-
-  <!-- Tabs -->
-
-  <div id="tabsBar" class="tabs">
-    <button id="customerTab" class="tab active">Guest</button>
-    <button id="adminTab" class="tab">Staff</button>
-  </div>
-
-  <!-- Customer Section -->
-
-  <section id="customerView">
-    <div class="card">
-      <div class="card-deco">✦</div>
-      <h2>Your Stamps</h2>
-      <div class="notice">Your account may be removed from the loyalty programme after 90 days without a stamp activity.</div>
-      <label>Mobile Number</label>
-      <input id="customerPhone" inputmode="tel" placeholder="04xxxxxxxx"/>
-      <button id="checkCustomerBtn">View Stamps</button>
-      <div id="customerStatus" class="status"></div>
-      <div id="customerResult" class="customerBox hidden"></div>
-    </div>
-
-```
-<div class="card">
-  <div class="card-deco">✦</div>
-  <button id="toggleRegisterBtn" class="secondary">New Member Registration</button>
-  <div id="registerPanel" class="hidden">
-    <div class="divider"></div>
-    <h2>Join B-Side</h2>
-    <label>Full Name</label>
-    <input id="registerName" placeholder="Your name"/>
-    <label>Mobile Number</label>
-    <input id="registerPhone" inputmode="tel" placeholder="04xxxxxxxx"/>
-    <label>Email Address <span style="font-weight:300;text-transform:none;letter-spacing:0">(optional)</span></label>
-    <input id="registerEmail" type="email" placeholder="Optional"/>
-    <button id="registerBtn" class="green">Create Account</button>
-    <div id="registerStatus" class="status"></div>
-  </div>
-</div>
-```
-
-  </section>
-
-  <!-- Admin Section -->
-
-  <section id="adminView" class="hidden">
-    <div id="loginCard" class="card">
-      <div class="card-deco">✦</div>
-      <h2>Staff Access</h2>
-      <label>Email</label>
-      <input id="adminEmailInput" type="email"/>
-      <label>Password</label>
-      <input id="adminPasswordInput" type="password"/>
-      <button id="loginBtn">Sign In</button>
-      <div id="loginStatus" class="status"></div>
-    </div>
-
-```
-<div id="adminPanel" class="hidden">
-  <div class="card">
-    <div class="topbar">
-      <div>
-        <div class="adminLabel">Admin Panel</div>
-        <div id="adminEmailLabel" class="adminEmail"></div>
+  <div class="app">
+    <div class="brand">
+      <div class="logo">
+        <img src="https://drive.google.com/thumbnail?id=1Z-bUnBA-mZiyab2B_HuQQ4OSvfQYI6Nr&sz=w1000" alt="B-Side logo">
       </div>
-      <button id="logoutBtn" class="secondary">Sign Out</button>
+      <h1 id="appTitle">B-Side</h1>
+      
     </div>
+
+    <div id="tabsBar" class="tabs">
+      <button id="customerTab" class="tab active">Customer</button>
+      <button id="adminTab" class="tab">Admin</button>
+    </div>
+
+    <section id="customerView">
+      <div class="card">
+        <h2>Check your stamps</h2>
+
+        <label>Phone number or email</label>
+        <input id="customerLookup" inputmode="email" placeholder="04xxxxxxxx or email@example.com" />
+
+        <button id="checkCustomerBtn">Check stamps</button>
+        <div id="customerStatus" class="status"></div>
+        <div id="customerResult" class="customerBox hidden"></div>
+
+      </div>
+
+      <div class="card">
+        <button id="toggleRegisterBtn" class="secondary">Register new account</button>
+
+        <div id="registerPanel" class="hidden">
+          <div class="divider"></div>
+          <h2>Register</h2>
+
+          <label>Your name</label>
+          <input id="registerName" placeholder="Your name" />
+
+          <label>Phone number</label>
+          <input id="registerPhone" inputmode="tel" placeholder="04xxxxxxxx" />
+
+          <label>Email optional</label>
+          <input id="registerEmail" type="email" placeholder="Optional" />
+
+          <button id="registerBtn" class="green">Register</button>
+          <div id="registerStatus" class="status"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="rules" style="margin-top:0;">
+          <div class="rulesTitle">Loyalty rules</div>
+          <ol>
+            <li>Collect 10 stamps to receive 1 free reward.</li>
+            <li>Free rewards expire 14 days after they are issued.</li>
+            <li>Accounts with no stamp activity for 90 days may be removed from the system.</li>
+            <li>Please use the same phone number or email each visit so your stamps stay together.</li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <section id="adminView" class="hidden">
+      <div id="loginCard" class="card">
+        <h2>Admin login</h2>
+
+        <label>Email</label>
+        <input id="adminEmailInput" type="email" placeholder="admin@email.com" />
+
+        <label>Password</label>
+        <input id="adminPasswordInput" type="password" placeholder="Password" />
+
+        <button id="loginBtn">Login</button>
+        <div id="loginStatus" class="status"></div>
+      </div>
+
+      <div id="adminPanel" class="hidden">
+        <div class="card">
+          <div class="topbar">
+            <div>
+              <strong>Shop Admin</strong>
+              <div id="adminEmailLabel" class="adminEmail"></div>
+            </div>
+            <button id="logoutBtn" class="secondary">Logout</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Find Customer</h3>
+
+          <label>Phone number or email</label>
+          <input id="adminSearchInput" inputmode="email" placeholder="04xxxxxxxx or email@example.com" />
+
+          <button id="adminSearchBtn">Search</button>
+          <div id="adminSearchStatus" class="status"></div>
+        </div>
+
+        <div class="card">
+          <div class="titleRow">
+            <h3>Add / Update Customer</h3>
+            <span class="badge">Editable</span>
+          </div>
+
+          <label>Customer name</label>
+          <input id="newName" placeholder="Customer name" />
+
+          <label>Phone number</label>
+          <input id="newPhone" inputmode="tel" placeholder="04xxxxxxxx" />
+
+          <label>Email optional</label>
+          <input id="newEmail" type="email" placeholder="Optional" />
+
+          <label class="checkboxRow">
+            <input id="sendEmailAfterStamp" type="checkbox" checked />
+            Send email after stamping
+          </label>
+
+          <button id="saveCustomerBtn" class="green">Save customer</button>
+          <div id="saveStatus" class="status"></div>
+        </div>
+
+        <div id="stampControlCard" class="card">
+          <h3>Stamp Control</h3>
+          <div id="adminCustomerBox" class="customerBox hidden"></div>
+        </div>
+      </div>
+    </section>
   </div>
 
-  <div class="card">
-    <div class="card-deco">✦</div>
-    <h3>Find Member</h3>
-    <label>Mobile Number</label>
-    <input id="adminSearchPhone" inputmode="tel" placeholder="04xxxxxxxx"/>
-    <button id="adminSearchBtn">Search</button>
-    <div id="adminSearchStatus" class="status"></div>
-  </div>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
+    import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, addDoc, getDocs, query, orderBy, limit, serverTimestamp, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
-  <div class="card">
-    <div class="card-deco">✦</div>
-    <h3>Add / Update Member</h3>
-    <label>Member Name</label>
-    <input id="newName"/>
-    <label>Mobile Number</label>
-    <input id="newPhone" inputmode="tel"/>
-    <label>Email <span style="font-size:10px;text-transform:none;letter-spacing:0">(optional)</span></label>
-    <input id="newEmail" type="email"/>
-    <button id="saveCustomerBtn" class="green">Save Member</button>
-    <div id="saveStatus" class="status"></div>
-  </div>
+    const LOGO_URL = "https://drive.google.com/thumbnail?id=1Z-bUnBA-mZiyab2B_HuQQ4OSvfQYI6Nr&sz=w1000";
 
-  <div class="card">
-    <div class="card-deco">✦</div>
-    <h3>Stamp Control</h3>
-    <div id="adminCustomerBox" class="customerBox hidden"></div>
-  </div>
-</div>
-```
+    const firebaseConfig = {
+      apiKey: "AIzaSyAv_VceNH0c6h8KKwvQOVWj3Pj7KRlZ3co",
+      authDomain: "loyalty-24f4f.firebaseapp.com",
+      projectId: "loyalty-24f4f",
+      storageBucket: "loyalty-24f4f.firebasestorage.app",
+      messagingSenderId: "961541943140",
+      appId: "1:961541943140:web:347b834e3bb0b6a5df1471",
+      measurementId: "G-NPP1MF4G6H"
+    };
 
-  </section>
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
 
-</div>
+    const TARGET = 10;
+    const EXPIRY_DAYS = 14;
+    const INACTIVE_DELETE_DAYS = 90;
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
-import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, addDoc, getDocs, query, orderBy, limit, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+    let currentPhone = null;
+    let stampBatchAmount = 1;
 
-const firebaseConfig={apiKey:"AIzaSyAv_VceNH0c6h8KKwvQOVWj3Pj7KRlZ3co",authDomain:"loyalty-24f4f.firebaseapp.com",projectId:"loyalty-24f4f",storageBucket:"loyalty-24f4f.firebasestorage.app",messagingSenderId:"961541943140",appId:"1:961541943140:web:347b834e3bb0b6a5df1471",measurementId:"G-NPP1MF4G6H"};
-const app=initializeApp(firebaseConfig), auth=getAuth(app), db=getFirestore(app);
-const TARGET=10, EXPIRY_DAYS=14, INACTIVE_DELETE_DAYS=90;
-let currentPhone=null, stampBatchAmount=1;
-const EMAIL_WEB_APP_URL="https://script.google.com/macros/s/AKfycbyNMGf3Tx2swO1cFtZ4UqdF8RZysTUlMKKBBCiO8677Sc6brCwqAihfQcXY0W-NVzjqPg/exec";
-const EMAIL_SECRET="25372537";
-const $=id=>document.getElementById(id);
-const normalizePhone=p=>String(p||"").replace(/\s+/g,"").trim();
-const validPhone=p=>/^04\d{8}$/.test(p);
-const showStatus=(el,msg,type="")=>{el.textContent=msg||"";el.className="status";if(type)el.classList.add(type)};
-const escapeHtml=t=>String(t??"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;");
-const addDays=(date,days)=>{const d=new Date(date);d.setDate(d.getDate()+days);return d};
-const toDate=v=>v?.toDate?v.toDate():(v?new Date(v):null);
-const formatDate=v=>{const d=toDate(v);if(!d||isNaN(d))return "-";return d.toLocaleDateString("en-AU",{day:"2-digit",month:"short",year:"numeric"})};
-const activeRewards=(rewards=[])=>rewards.filter(r=>!r.used&&toDate(r.expiresAt)>=new Date());
-const expiredRewards=(rewards=[])=>rewards.filter(r=>!r.used&&toDate(r.expiresAt)<new Date());
-function stampHtml(stamps){let html='<div class="stampGrid">';const current=Math.max(0,Math.min(TARGET,Number(stamps||0)));for(let i=1;i<=TARGET;i++)html+=`<div class="stamp ${i<=current?'on':''}">${i<=current?'<img src="https://drive.google.com/thumbnail?id=1Z-bUnBA-mZiyab2B_HuQQ4OSvfQYI6Nr&sz=w1000" alt="B-Side stamp">':''}</div>`;return html+'</div>'}
-async function writeHistory(phone,action,note=""){await addDoc(collection(db,"customers",phone,"history"),{action,note,createdAt:serverTimestamp()})}
-function sendStampEmailInBackground(phone,rewardCreated){fetch(EMAIL_WEB_APP_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({secret:EMAIL_SECRET,phone,rewardCreated:rewardCreated===true})}).catch(err=>console.log("Email send failed:",err))}
-function showCustomerView(){$("appTitle").textContent="B-Side";$("tabsBar").classList.add("hidden");$("customerView").classList.remove("hidden");$("adminView").classList.add("hidden")}
-function showAdminView(){$("appTitle").textContent="B-Side";$("tabsBar").classList.add("hidden");$("adminView").classList.remove("hidden");$("customerView").classList.add("hidden");$("adminTab").classList.add("active");$("customerTab").classList.remove("active")}
-$("customerTab").onclick=()=>{history.replaceState(null,"",location.pathname+"?view=customer");showCustomerView()};
-$("adminTab").onclick=()=>{history.replaceState(null,"",location.pathname+"?view=admin");showAdminView()};
-(new URLSearchParams(location.search).get("view")==="admin")?showAdminView():showCustomerView();
-$("toggleRegisterBtn").onclick=()=>{$("registerPanel").classList.toggle("hidden");$("toggleRegisterBtn").textContent=$("registerPanel").classList.contains("hidden")?"New Member Registration":"Close Registration"};
-$("checkCustomerBtn").onclick=async()=>{const phone=normalizePhone($("customerPhone").value);$("customerResult").classList.add("hidden");showStatus($("customerStatus"),"");if(!validPhone(phone))return showStatus($("customerStatus"),"Phone number must start with 04 and have 10 digits.","error");try{const snap=await getDoc(doc(db,"customers",phone));if(!snap.exists())return showStatus($("customerStatus"),"Member not found.","error");renderCustomer(snap.data());showStatus($("customerStatus"),"Loaded.","success")}catch(e){showStatus($("customerStatus"),e.message,"error")}};
-function renderCustomer(c){const active=activeRewards(c.rewards||[]), expired=expiredRewards(c.rewards||[]);$("customerResult").innerHTML=`<div class="customerName">${escapeHtml(c.name||"Guest")}</div><div class="mini">${escapeHtml(c.phone||"")}</div><div class="bigNumber">${Number(c.stamps||0)}</div><div class="mini" style="text-align:center;letter-spacing:0.12em;">stamps collected</div>${stampHtml(c.stamps||0)}<div><span class="pill">🎁 Active rewards: ${active.length}</span><span class="pill">⌛ Expired: ${expired.length}</span></div><div class="mini" style="margin-top:8px;">Last activity: ${formatDate(c.lastStampAt||c.updatedAt||c.createdAt)}</div><div class="notice">Your account may be removed after ${INACTIVE_DELETE_DAYS} days of inactivity.</div>${active.length?active.map((r,i)=>`<div class="historyItem"><strong>Complimentary Reward #${i+1}</strong><br><span class="mini">Expires: ${formatDate(r.expiresAt)}</span></div>`).join(""):`<div class="mini">No active rewards yet. Collect ${TARGET} stamps to earn your complimentary reward.</div>`}`;$("customerResult").classList.remove("hidden")}
-$("registerBtn").onclick=async()=>{const name=$("registerName").value.trim(),phone=normalizePhone($("registerPhone").value),email=$("registerEmail").value.trim();showStatus($("registerStatus"),"");if(!name)return showStatus($("registerStatus"),"Please enter your name.","error");if(!validPhone(phone))return showStatus($("registerStatus"),"Phone number must start with 04 and have 10 digits.","error");try{const ref=doc(db,"customers",phone);if((await getDoc(ref)).exists())return showStatus($("registerStatus"),"This number is already registered. Please check your stamps above.","error");await setDoc(ref,{name,phone,stamps:0,rewards:[],createdAt:serverTimestamp(),updatedAt:serverTimestamp(),lastStampAt:null,registeredBy:"customer"});if(email)await setDoc(doc(db,"customerPrivate",phone),{email,createdAt:serverTimestamp(),updatedAt:serverTimestamp(),registeredBy:"customer"},{merge:true});$("registerName").value="";$("registerPhone").value="";$("registerEmail").value="";$("customerPhone").value=phone;showStatus($("registerStatus"),"Welcome to B-Side. You may now check your stamps.","success")}catch(e){showStatus($("registerStatus"),e.message,"error")}};
-$("loginBtn").onclick=async()=>{try{await signInWithEmailAndPassword(auth,$("adminEmailInput").value.trim(),$("adminPasswordInput").value);showStatus($("loginStatus"),"Signed in.","success")}catch(e){showStatus($("loginStatus"),e.message,"error")}};
-$("logoutBtn").onclick=()=>signOut(auth);
-onAuthStateChanged(auth,user=>{if(user){$("loginCard").classList.add("hidden");$("adminPanel").classList.remove("hidden");$("adminEmailLabel").textContent=user.email}else{$("loginCard").classList.remove("hidden");$("adminPanel").classList.add("hidden");$("adminEmailLabel").textContent=""}});
-$("saveCustomerBtn").onclick=async()=>{const name=$("newName").value.trim(),phone=normalizePhone($("newPhone").value),email=$("newEmail").value.trim();showStatus($("saveStatus"),"");if(!name)return showStatus($("saveStatus"),"Member name is required.","error");if(!validPhone(phone))return showStatus($("saveStatus"),"Phone number must start with 04 and have 10 digits.","error");try{const ref=doc(db,"customers",phone),priv=doc(db,"customerPrivate",phone),old=await getDoc(ref);if(old.exists()){await updateDoc(ref,{name,phone,updatedAt:serverTimestamp()});await setDoc(priv,{email,updatedAt:serverTimestamp()},{merge:true});await writeHistory(phone,"Customer updated",`Name: ${name}`);showStatus($("saveStatus"),"Member updated.","success")}else{await setDoc(ref,{name,phone,stamps:0,rewards:[],createdAt:serverTimestamp(),updatedAt:serverTimestamp(),lastStampAt:null});await setDoc(priv,{email,createdAt:serverTimestamp(),updatedAt:serverTimestamp()});await writeHistory(phone,"Customer created",`Name: ${name}`);showStatus($("saveStatus"),"Member created.","success")}$("adminSearchPhone").value=phone;await loadAdminCustomer(phone)}catch(e){showStatus($("saveStatus"),e.message,"error")}};
-$("adminSearchBtn").onclick=()=>loadAdminCustomer(normalizePhone($("adminSearchPhone").value));
-async function loadAdminCustomer(phone){currentPhone=null;$("adminCustomerBox").classList.add("hidden");showStatus($("adminSearchStatus"),"");if(!validPhone(phone))return showStatus($("adminSearchStatus"),"Phone number must start with 04 and have 10 digits.","error");try{const snap=await getDoc(doc(db,"customers",phone));if(!snap.exists())return showStatus($("adminSearchStatus"),"Member not found.","error");const priv=await getDoc(doc(db,"customerPrivate",phone));const hq=query(collection(db,"customers",phone,"history"),orderBy("createdAt","desc"),limit(10));const hs=await getDocs(hq);const history=[];hs.forEach(d=>history.push(d.data()));currentPhone=phone;const c={...snap.data(),email:priv.exists()?(priv.data().email||""):"",history};$("newName").value=c.name||"";$("newPhone").value=c.phone||phone;$("newEmail").value=c.email||"";stampBatchAmount=1;renderAdmin(c);showStatus($("adminSearchStatus"),"Member found.","success")}catch(e){showStatus($("adminSearchStatus"),e.message,"error")}}
-function renderAdmin(c){const rewards=c.rewards||[],active=activeRewards(rewards);$("adminCustomerBox").innerHTML=`<div class="customerName">${escapeHtml(c.name||"Guest")}</div><div class="mini">${escapeHtml(c.phone||"")}</div><div class="mini">${c.email?"Email: "+escapeHtml(c.email):"No email on file"}</div><div class="bigNumber">${Number(c.stamps||0)}</div><div class="mini" style="text-align:center;letter-spacing:0.1em;">current stamps</div>${stampHtml(c.stamps||0)}<div><span class="pill">🎁 Active: ${active.length}</span><span class="pill">Total rewards: ${rewards.length}</span><span class="pill">Last activity: ${formatDate(c.lastStampAt||c.updatedAt||c.createdAt)}</span></div><div class="divider"></div><h3>Batch Stamps</h3><div class="mini">Select amount, then press Apply once. Email is sent once only.</div><div class="row3" style="margin-top:14px;"><button id="decreaseBatchBtn" class="secondary small">−</button><input id="batchAmountInput" inputmode="numeric" value="${stampBatchAmount}"/><button id="increaseBatchBtn" class="secondary small">+</button></div><button id="applyBatchStampBtn" class="green">Apply Stamps</button><div class="divider"></div><button id="removeBatchStampBtn" class="red">Remove Stamps</button><div class="mini" style="margin-top:8px;">Removes the amount shown above. No email will be sent.</div><div class="divider"></div><button id="useRewardBtn" class="yellow">Redeem 1 Reward</button><div class="divider"></div><h3>Rewards</h3>${rewards.length?rewards.map((r,i)=>`<div class="historyItem"><strong>Reward #${i+1}</strong><br><span class="mini">Status: ${r.used?"Redeemed":(active.includes(r)?"Active":"Expired")}<br>Expires: ${formatDate(r.expiresAt)}</span></div>`).join(""):`<div class="mini">No rewards on record.</div>`}<div class="divider"></div><h3>Recent History</h3>${c.history?.length?c.history.map(h=>`<div class="historyItem"><strong>${escapeHtml(h.action||"")}</strong><br><span class="mini">${escapeHtml(h.note||"")}<br>${formatDate(h.createdAt)}</span></div>`).join(""):`<div class="mini">No history yet.</div>`}`;$("adminCustomerBox").classList.remove("hidden");$("batchAmountInput").oninput=()=>stampBatchAmount=Math.max(1,Math.min(99,Number($("batchAmountInput").value||1)));$("decreaseBatchBtn").onclick=()=>setBatchAmount(stampBatchAmount-1);$("increaseBatchBtn").onclick=()=>setBatchAmount(stampBatchAmount+1);$("applyBatchStampBtn").onclick=applyBatchStamps;$("removeBatchStampBtn").onclick=removeBatchStamps;$("useRewardBtn").onclick=useReward}
-function setBatchAmount(n){stampBatchAmount=Math.max(1,Math.min(99,Number(n||1)));if($("batchAmountInput"))$("batchAmountInput").value=stampBatchAmount}
-async function applyBatchStamps(){if(!currentPhone)return;const amount=Math.max(1,Math.min(99,Number(stampBatchAmount||1)));try{const ref=doc(db,"customers",currentPhone),snap=await getDoc(ref);if(!snap.exists())return;const c=snap.data();let stamps=Number(c.stamps||0);const rewards=c.rewards||[];let rewardsCreated=0;for(let i=0;i<amount;i++){stamps++;if(stamps>=TARGET){stamps-=TARGET;rewardsCreated++;const now=new Date();rewards.push({createdAt:now.toISOString(),expiresAt:addDays(now,EXPIRY_DAYS).toISOString(),used:false,usedAt:null})}}const note=rewardsCreated>0?`+${amount} stamps, converted to ${rewardsCreated} free reward(s)`:`+${amount} stamp(s)`;await updateDoc(ref,{stamps,rewards,updatedAt:serverTimestamp(),lastStampAt:serverTimestamp()});await writeHistory(currentPhone,"Stamps added",note);sendStampEmailInBackground(currentPhone,rewardsCreated>0);await loadAdminCustomer(currentPhone)}catch(e){showStatus($("adminSearchStatus"),e.message,"error")}}
-async function removeBatchStamps(){if(!currentPhone)return;const amount=Math.max(1,Math.min(99,Number(stampBatchAmount||1)));try{const ref=doc(db,"customers",currentPhone),snap=await getDoc(ref);if(!snap.exists())return;const stamps=Math.max(0,Number(snap.data().stamps||0)-amount);await updateDoc(ref,{stamps,updatedAt:serverTimestamp()});await writeHistory(currentPhone,"Stamps removed",`-${amount} stamp(s)`);await loadAdminCustomer(currentPhone)}catch(e){showStatus($("adminSearchStatus"),e.message,"error")}}
-async function useReward(){if(!currentPhone)return;try{const ref=doc(db,"customers",currentPhone),snap=await getDoc(ref);if(!snap.exists())return;const rewards=snap.data().rewards||[],now=new Date();const idx=rewards.findIndex(r=>!r.used&&toDate(r.expiresAt)>=now);if(idx===-1)return showStatus($("adminSearchStatus"),"No active reward available.","error");rewards[idx].used=true;rewards[idx].usedAt=now.toISOString();await updateDoc(ref,{rewards,updatedAt:serverTimestamp()});await writeHistory(currentPhone,"Reward used","1 complimentary reward redeemed");await loadAdminCustomer(currentPhone)}catch(e){showStatus($("adminSearchStatus"),e.message,"error")}}
-</script>
+    const EMAIL_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyNMGf3Tx2swO1cFtZ4UqdF8RZysTUlMKKBBCiO8677Sc6brCwqAihfQcXY0W-NVzjqPg/exec";
+    const EMAIL_SECRET = "25372537";
 
+    const $ = id => document.getElementById(id);
+    const normalizePhone = p => String(p || "").replace(/\s+/g, "").trim();
+    const normalizeEmail = e => String(e || "").trim().toLowerCase();
+    const emailKey = e => encodeURIComponent(normalizeEmail(e));
+    const validPhone = p => /^04\d{8}$/.test(p);
+    const validEmail = e => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizeEmail(e));
+    const isEmailLookup = v => String(v || "").includes("@");
+
+    function showStatus(el, msg, type = "") {
+      el.textContent = msg || "";
+      el.className = "status";
+      if (type) el.classList.add(type);
+    }
+
+    function escapeHtml(text) {
+      return String(text ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function addDays(date, days) {
+      const d = new Date(date);
+      d.setDate(d.getDate() + days);
+      return d;
+    }
+
+    function toDate(v) {
+      return v?.toDate ? v.toDate() : (v ? new Date(v) : null);
+    }
+
+    function formatDate(v) {
+      const d = toDate(v);
+      if (!d || isNaN(d)) return "-";
+      return d.toLocaleDateString("en-AU", { day: "2-digit", month: "short", year: "numeric" });
+    }
+
+    const activeRewards = (rewards = []) => rewards.filter(r => !r.used && toDate(r.expiresAt) >= new Date());
+    const expiredRewards = (rewards = []) => rewards.filter(r => !r.used && toDate(r.expiresAt) < new Date());
+
+    function stampHtml(stamps) {
+      let html = '<div class="stampGrid">';
+      const current = Math.max(0, Math.min(TARGET, Number(stamps || 0)));
+
+      for (let i = 1; i <= TARGET; i++) {
+        html += `
+          <div class="stamp ${i <= current ? "on" : ""}">
+            ${i <= current ? `<img src="${LOGO_URL}" alt="B-Side stamp">` : ""}
+          </div>
+        `;
+      }
+
+      return html + "</div>";
+    }
+
+    async function findPhoneByLookup(raw) {
+      const value = String(raw || "").trim();
+
+      if (isEmailLookup(value)) {
+        const email = normalizeEmail(value);
+        if (!validEmail(email)) throw new Error("Please enter a valid email address.");
+
+        const lookupSnap = await getDoc(doc(db, "emailLookup", emailKey(email)));
+        if (!lookupSnap.exists()) throw new Error("Customer not found with this email.");
+
+        return lookupSnap.data().phone;
+      }
+
+      const phone = normalizePhone(value);
+      if (!validPhone(phone)) throw new Error("Phone must start with 04 and have 10 digits, or enter a valid email.");
+      return phone;
+    }
+
+    async function ensureEmailAvailable(email, currentPhone = "") {
+      const normalized = normalizeEmail(email);
+      if (!normalized) return;
+      if (!validEmail(normalized)) throw new Error("Please enter a valid email address.");
+
+      const lookupRef = doc(db, "emailLookup", emailKey(normalized));
+      const lookupSnap = await getDoc(lookupRef);
+
+      if (lookupSnap.exists() && lookupSnap.data().phone !== currentPhone) {
+        throw new Error("This email is already registered with another customer.");
+      }
+    }
+
+    async function saveEmailLookup(email, phone) {
+      const normalized = normalizeEmail(email);
+      if (!normalized) return;
+
+      await setDoc(doc(db, "emailLookup", emailKey(normalized)), {
+        email: normalized,
+        phone,
+        updatedAt: serverTimestamp()
+      }, { merge: true });
+    }
+
+    async function writeHistory(phone, action, note = "") {
+      await addDoc(collection(db, "customers", phone, "history"), {
+        action,
+        note,
+        createdAt: serverTimestamp()
+      });
+    }
+
+    function sendStampEmailInBackground(phone, rewardCreated) {
+      fetch(EMAIL_WEB_APP_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify({
+          secret: EMAIL_SECRET,
+          phone,
+          rewardCreated: rewardCreated === true
+        })
+      }).catch(err => console.log("Email send failed:", err));
+    }
+
+    function showCustomerView() {
+      $("appTitle").textContent = "B-Side";
+      $("tabsBar").classList.add("hidden");
+      $("customerView").classList.remove("hidden");
+      $("adminView").classList.add("hidden");
+    }
+
+    function showAdminView() {
+      $("appTitle").textContent = "B-Side Admin";
+      $("tabsBar").classList.add("hidden");
+      $("adminView").classList.remove("hidden");
+      $("customerView").classList.add("hidden");
+      $("adminTab").classList.add("active");
+      $("customerTab").classList.remove("active");
+    }
+
+    $("customerTab").onclick = () => {
+      history.replaceState(null, "", location.pathname + "?view=customer");
+      showCustomerView();
+    };
+
+    $("adminTab").onclick = () => {
+      history.replaceState(null, "", location.pathname + "?view=admin");
+      showAdminView();
+    };
+
+    new URLSearchParams(location.search).get("view") === "admin"
+      ? showAdminView()
+      : showCustomerView();
+
+    $("toggleRegisterBtn").onclick = () => {
+      $("registerPanel").classList.toggle("hidden");
+      $("toggleRegisterBtn").textContent = $("registerPanel").classList.contains("hidden")
+        ? "Register new account"
+        : "Hide register";
+    };
+
+    $("checkCustomerBtn").onclick = async () => {
+      $("customerResult").classList.add("hidden");
+      showStatus($("customerStatus"), "");
+
+      try {
+        const phone = await findPhoneByLookup($("customerLookup").value);
+        const snap = await getDoc(doc(db, "customers", phone));
+
+        if (!snap.exists()) {
+          return showStatus($("customerStatus"), "Customer not found.", "error");
+        }
+
+        renderCustomer(snap.data());
+        showStatus($("customerStatus"), "Loaded.", "success");
+      } catch (e) {
+        showStatus($("customerStatus"), e.message, "error");
+      }
+    };
+
+    function renderCustomer(c) {
+      const active = activeRewards(c.rewards || []);
+      const expired = expiredRewards(c.rewards || []);
+
+      $("customerResult").innerHTML = `
+        <div class="customerName">${escapeHtml(c.name || "Customer")}</div>
+        <div class="mini">${escapeHtml(c.phone || "")}</div>
+
+        <div class="bigNumber">${Number(c.stamps || 0)}</div>
+        <div class="mini" style="text-align:center;">stamps collected</div>
+
+        ${stampHtml(c.stamps || 0)}
+
+        <div>
+          <span class="pill">Active rewards: ${active.length}</span>
+          <span class="pill">Expired rewards: ${expired.length}</span>
+        </div>
+
+        <div class="mini" style="margin-top:8px;">
+          Last stamp update: ${formatDate(c.lastStampAt || c.updatedAt || c.createdAt)}
+        </div>
+
+        ${
+          active.length
+            ? active.map((r, i) => `
+                <div class="historyItem">
+                  <strong>Free reward #${i + 1}</strong><br>
+                  <span class="mini">Expires: ${formatDate(r.expiresAt)}</span>
+                </div>
+              `).join("")
+            : `<div class="mini">No active reward yet. Collect ${TARGET} stamps to get 1 free item.</div>`
+        }
+      `;
+
+      $("customerResult").classList.remove("hidden");
+    }
+
+    $("registerBtn").onclick = async () => {
+      const name = $("registerName").value.trim();
+      const phone = normalizePhone($("registerPhone").value);
+      const email = normalizeEmail($("registerEmail").value);
+
+      showStatus($("registerStatus"), "");
+
+      if (!name) return showStatus($("registerStatus"), "Please enter your name.", "error");
+      if (!validPhone(phone)) return showStatus($("registerStatus"), "Phone number must start with 04 and have 10 digits.", "error");
+
+      try {
+        if (email) await ensureEmailAvailable(email);
+
+        const ref = doc(db, "customers", phone);
+
+        if ((await getDoc(ref)).exists()) {
+          return showStatus($("registerStatus"), "This phone number is already registered. Please check your stamps above.", "error");
+        }
+
+        await setDoc(ref, {
+          name,
+          phone,
+          stamps: 0,
+          rewards: [],
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp(),
+          lastStampAt: null,
+          registeredBy: "customer"
+        });
+
+        if (email) {
+          await setDoc(doc(db, "customerPrivate", phone), {
+            email,
+            createdAt: serverTimestamp(),
+            updatedAt: serverTimestamp(),
+            registeredBy: "customer"
+          }, { merge: true });
+
+          await saveEmailLookup(email, phone);
+        }
+
+        $("registerName").value = "";
+        $("registerPhone").value = "";
+        $("registerEmail").value = "";
+        $("customerLookup").value = phone;
+
+        showStatus($("registerStatus"), "Registered successfully. You can now check your stamps.", "success");
+      } catch (e) {
+        showStatus($("registerStatus"), e.message, "error");
+      }
+    };
+
+    $("loginBtn").onclick = async () => {
+      try {
+        await signInWithEmailAndPassword(
+          auth,
+          $("adminEmailInput").value.trim(),
+          $("adminPasswordInput").value
+        );
+        showStatus($("loginStatus"), "Logged in.", "success");
+      } catch (e) {
+        showStatus($("loginStatus"), e.message, "error");
+      }
+    };
+
+    $("logoutBtn").onclick = () => signOut(auth);
+
+    onAuthStateChanged(auth, user => {
+      if (user) {
+        $("loginCard").classList.add("hidden");
+        $("adminPanel").classList.remove("hidden");
+        $("adminEmailLabel").textContent = user.email;
+      } else {
+        $("loginCard").classList.remove("hidden");
+        $("adminPanel").classList.add("hidden");
+        $("adminEmailLabel").textContent = "";
+      }
+    });
+
+    $("saveCustomerBtn").onclick = async () => {
+      const name = $("newName").value.trim();
+      const phone = normalizePhone($("newPhone").value);
+      const email = normalizeEmail($("newEmail").value);
+
+      showStatus($("saveStatus"), "");
+
+      if (!name) return showStatus($("saveStatus"), "Customer name is required.", "error");
+      if (!validPhone(phone)) return showStatus($("saveStatus"), "Phone number must start with 04 and have 10 digits.", "error");
+
+      try {
+        if (email) await ensureEmailAvailable(email, phone);
+
+        const ref = doc(db, "customers", phone);
+        const priv = doc(db, "customerPrivate", phone);
+        const old = await getDoc(ref);
+
+        if (old.exists()) {
+          await updateDoc(ref, { name, phone, updatedAt: serverTimestamp() });
+          await setDoc(priv, { email, updatedAt: serverTimestamp() }, { merge: true });
+          if (email) await saveEmailLookup(email, phone);
+          await writeHistory(phone, "Customer updated", `Name: ${name}`);
+          showStatus($("saveStatus"), "Customer updated.", "success");
+        } else {
+          await setDoc(ref, {
+            name,
+            phone,
+            stamps: 0,
+            rewards: [],
+            createdAt: serverTimestamp(),
+            updatedAt: serverTimestamp(),
+            lastStampAt: null
+          });
+
+          await setDoc(priv, {
+            email,
+            createdAt: serverTimestamp(),
+            updatedAt: serverTimestamp()
+          });
+
+          if (email) await saveEmailLookup(email, phone);
+          await writeHistory(phone, "Customer created", `Name: ${name}`);
+          showStatus($("saveStatus"), "Customer created.", "success");
+        }
+
+        $("adminSearchInput").value = phone;
+        await loadAdminCustomer(phone, { preserveScroll: true });
+      } catch (e) {
+        showStatus($("saveStatus"), e.message, "error");
+      }
+    };
+
+    $("adminSearchBtn").onclick = async () => {
+      try {
+        const phone = await findPhoneByLookup($("adminSearchInput").value);
+        await loadAdminCustomer(phone);
+      } catch (e) {
+        showStatus($("adminSearchStatus"), e.message, "error");
+      }
+    };
+
+    async function loadAdminCustomer(phone, options = {}) {
+      const previousY = window.scrollY;
+
+      currentPhone = null;
+      $("adminCustomerBox").classList.add("hidden");
+      showStatus($("adminSearchStatus"), "");
+
+      if (!validPhone(phone)) {
+        return showStatus($("adminSearchStatus"), "Phone number must start with 04 and have 10 digits.", "error");
+      }
+
+      try {
+        const snap = await getDoc(doc(db, "customers", phone));
+
+        if (!snap.exists()) {
+          return showStatus($("adminSearchStatus"), "Customer not found.", "error");
+        }
+
+        const priv = await getDoc(doc(db, "customerPrivate", phone));
+        const hq = query(collection(db, "customers", phone, "history"), orderBy("createdAt", "desc"), limit(10));
+        const hs = await getDocs(hq);
+        const history = [];
+
+        hs.forEach(d => history.push(d.data()));
+
+        currentPhone = phone;
+
+        const c = {
+          ...snap.data(),
+          email: priv.exists() ? (priv.data().email || "") : "",
+          history
+        };
+
+        $("newName").value = c.name || "";
+        $("newPhone").value = c.phone || phone;
+        $("newEmail").value = c.email || "";
+
+        stampBatchAmount = Math.max(1, stampBatchAmount || 1);
+        renderAdmin(c);
+
+        showStatus($("adminSearchStatus"), "Customer found.", "success");
+
+        if (options.preserveScroll) {
+          requestAnimationFrame(() => window.scrollTo({ top: previousY, behavior: "auto" }));
+        }
+      } catch (e) {
+        showStatus($("adminSearchStatus"), e.message, "error");
+      }
+    }
+
+    function renderAdmin(c) {
+      const rewards = c.rewards || [];
+      const active = activeRewards(rewards);
+
+      $("adminCustomerBox").innerHTML = `
+        <div class="customerName">${escapeHtml(c.name || "Customer")}</div>
+        <div class="mini">${escapeHtml(c.phone || "")}</div>
+        <div class="mini">${c.email ? "Email: " + escapeHtml(c.email) : "No email"}</div>
+
+        <div class="bigNumber">${Number(c.stamps || 0)}</div>
+        <div class="mini" style="text-align:center;">current stamps</div>
+
+        ${stampHtml(c.stamps || 0)}
+
+        <div>
+          <span class="pill">Active: ${active.length}</span>
+          <span class="pill">Total rewards: ${rewards.length}</span>
+          <span class="pill">Last stamp: ${formatDate(c.lastStampAt || c.updatedAt || c.createdAt)}</span>
+        </div>
+
+        <div class="divider"></div>
+
+        <h3>Batch Stamp</h3>
+        <div class="mini">Choose amount first, then press Apply once. Email setting follows the checkbox above.</div>
+
+        <div class="row3" style="margin-top:12px;">
+          <button id="decreaseBatchBtn" class="secondary small">−</button>
+          <input id="batchAmountInput" class="amountInput" inputmode="numeric" value="${stampBatchAmount}" />
+          <button id="increaseBatchBtn" class="secondary small">+</button>
+        </div>
+
+        <button id="applyBatchStampBtn" class="green">Apply stamps</button>
+
+        <div class="divider"></div>
+
+        <div class="buttonGrid">
+          <button id="removeBatchStampBtn" class="red">Remove stamps</button>
+          <button id="useRewardBtn" class="yellow">Use reward</button>
+        </div>
+        <div class="mini" style="margin-top:8px;">Remove uses the same amount above. No email will be sent.</div>
+
+        <div class="divider"></div>
+
+        <h3>Rewards</h3>
+        ${
+          rewards.length
+            ? rewards.map((r, i) => `
+                <div class="historyItem">
+                  <strong>Reward #${i + 1}</strong><br>
+                  <span class="mini">
+                    Status: ${r.used ? "Used" : (active.includes(r) ? "Active" : "Expired")}<br>
+                    Expires: ${formatDate(r.expiresAt)}
+                  </span>
+                </div>
+              `).join("")
+            : `<div class="mini">No rewards yet.</div>`
+        }
+
+        <div class="divider"></div>
+
+        <h3>Recent History</h3>
+        ${
+          c.history?.length
+            ? c.history.map(h => `
+                <div class="historyItem">
+                  <strong>${escapeHtml(h.action || "")}</strong><br>
+                  <span class="mini">${escapeHtml(h.note || "")}<br>${formatDate(h.createdAt)}</span>
+                </div>
+              `).join("")
+            : `<div class="mini">No history yet.</div>`
+        }
+      `;
+
+      $("adminCustomerBox").classList.remove("hidden");
+
+      $("batchAmountInput").oninput = () => {
+        stampBatchAmount = Math.max(1, Math.min(99, Number($("batchAmountInput").value || 1)));
+      };
+
+      $("decreaseBatchBtn").onclick = () => setBatchAmount(stampBatchAmount - 1);
+      $("increaseBatchBtn").onclick = () => setBatchAmount(stampBatchAmount + 1);
+      $("applyBatchStampBtn").onclick = applyBatchStamps;
+      $("removeBatchStampBtn").onclick = removeBatchStamps;
+      $("useRewardBtn").onclick = useReward;
+    }
+
+    function setBatchAmount(n) {
+      stampBatchAmount = Math.max(1, Math.min(99, Number(n || 1)));
+      if ($("batchAmountInput")) $("batchAmountInput").value = stampBatchAmount;
+    }
+
+    async function applyBatchStamps() {
+      if (!currentPhone) return;
+
+      const previousY = window.scrollY;
+      const amount = Math.max(1, Math.min(99, Number(stampBatchAmount || 1)));
+
+      try {
+        const ref = doc(db, "customers", currentPhone);
+        const snap = await getDoc(ref);
+
+        if (!snap.exists()) return;
+
+        const c = snap.data();
+        let stamps = Number(c.stamps || 0);
+        const rewards = c.rewards || [];
+        let rewardsCreated = 0;
+
+        for (let i = 0; i < amount; i++) {
+          stamps++;
+
+          if (stamps >= TARGET) {
+            stamps -= TARGET;
+            rewardsCreated++;
+
+            const now = new Date();
+            rewards.push({
+              createdAt: now.toISOString(),
+              expiresAt: addDays(now, EXPIRY_DAYS).toISOString(),
+              used: false,
+              usedAt: null
+            });
+          }
+        }
+
+        const note = rewardsCreated > 0
+          ? `+${amount} stamps, converted to ${rewardsCreated} free reward(s)`
+          : `+${amount} stamp(s)`;
+
+        await updateDoc(ref, {
+          stamps,
+          rewards,
+          updatedAt: serverTimestamp(),
+          lastStampAt: serverTimestamp()
+        });
+
+        await writeHistory(currentPhone, "Stamps added", note);
+
+        if ($("sendEmailAfterStamp").checked) {
+          sendStampEmailInBackground(currentPhone, rewardsCreated > 0);
+        }
+
+        await loadAdminCustomer(currentPhone, { preserveScroll: true });
+        requestAnimationFrame(() => window.scrollTo({ top: previousY, behavior: "auto" }));
+      } catch (e) {
+        showStatus($("adminSearchStatus"), e.message, "error");
+      }
+    }
+
+    async function removeBatchStamps() {
+      if (!currentPhone) return;
+
+      const previousY = window.scrollY;
+      const amount = Math.max(1, Math.min(99, Number(stampBatchAmount || 1)));
+
+      try {
+        const ref = doc(db, "customers", currentPhone);
+        const snap = await getDoc(ref);
+
+        if (!snap.exists()) return;
+
+        const stamps = Math.max(0, Number(snap.data().stamps || 0) - amount);
+
+        await updateDoc(ref, {
+          stamps,
+          updatedAt: serverTimestamp()
+        });
+
+        await writeHistory(currentPhone, "Stamps removed", `-${amount} stamp(s)`);
+        await loadAdminCustomer(currentPhone, { preserveScroll: true });
+        requestAnimationFrame(() => window.scrollTo({ top: previousY, behavior: "auto" }));
+      } catch (e) {
+        showStatus($("adminSearchStatus"), e.message, "error");
+      }
+    }
+
+    async function useReward() {
+      if (!currentPhone) return;
+
+      const previousY = window.scrollY;
+
+      try {
+        const ref = doc(db, "customers", currentPhone);
+        const snap = await getDoc(ref);
+
+        if (!snap.exists()) return;
+
+        const rewards = snap.data().rewards || [];
+        const now = new Date();
+        const idx = rewards.findIndex(r => !r.used && toDate(r.expiresAt) >= now);
+
+        if (idx === -1) {
+          return showStatus($("adminSearchStatus"), "No active reward available.", "error");
+        }
+
+        rewards[idx].used = true;
+        rewards[idx].usedAt = now.toISOString();
+
+        await updateDoc(ref, {
+          rewards,
+          updatedAt: serverTimestamp()
+        });
+
+        await writeHistory(currentPhone, "Reward used", "1 free reward redeemed");
+        await loadAdminCustomer(currentPhone, { preserveScroll: true });
+        requestAnimationFrame(() => window.scrollTo({ top: previousY, behavior: "auto" }));
+      } catch (e) {
+        showStatus($("adminSearchStatus"), e.message, "error");
+      }
+    }
+  </script>
 </body>
 </html>
