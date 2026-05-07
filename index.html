@@ -713,14 +713,28 @@
       const lookupRef = doc(db, "emailLookup", emailKey(normalized));
       const lookupSnap = await getDoc(lookupRef);
 
-      if (lookupSnap.exists() && lookupSnap.data().phone !== currentPhone) {
-        throw new Error("This email is already registered with another customer.");
+      if (lookupSnap.exists()) {
+        const existingPhone = String(lookupSnap.data().phone || "");
+        if (existingPhone && existingPhone !== currentPhone) {
+          throw new Error("This email is already registered with another customer.");
+        }
       }
     }
 
-    async function saveEmailLookup(email, phone) {
+    async function saveEmailLookup(email, phone, oldEmail = "") {
       const normalized = normalizeEmail(email);
+      const oldNormalized = normalizeEmail(oldEmail);
+
+      if (oldNormalized && oldNormalized !== normalized) {
+        try {
+          await deleteDoc(doc(db, "emailLookup", emailKey(oldNormalized)));
+        } catch (err) {
+          console.log("Old email lookup delete skipped:", err);
+        }
+      }
+
       if (!normalized) return;
+      if (!validEmail(normalized)) throw new Error("Please enter a valid email address.");
 
       await setDoc(doc(db, "emailLookup", emailKey(normalized)), {
         email: normalized,
@@ -938,11 +952,19 @@
         const ref = doc(db, "customers", phone);
         const priv = doc(db, "customerPrivate", phone);
         const old = await getDoc(ref);
+        const oldPriv = await getDoc(priv);
+        const oldEmail = oldPriv.exists() ? (oldPriv.data().email || "") : "";
 
         if (old.exists()) {
           await updateDoc(ref, { name, phone, updatedAt: serverTimestamp() });
           await setDoc(priv, { email, updatedAt: serverTimestamp() }, { merge: true });
-          if (email) await saveEmailLookup(email, phone);
+
+          if (email) {
+            await saveEmailLookup(email, phone, oldEmail);
+          } else if (oldEmail) {
+            try { await deleteDoc(doc(db, "emailLookup", emailKey(oldEmail))); } catch (err) {}
+          }
+
           await writeHistory(phone, "Customer updated", `Name: ${name}`);
           showStatus($("saveStatus"), "Customer updated.", "success");
         } else {
