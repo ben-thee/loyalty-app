@@ -1070,7 +1070,8 @@
         ${stampHtml(c.stamps || 0)}
 
         <div>
-          <span class="pill">Claimed rewards: ${rewards.filter(r => r.used === true).length}</span>
+          <span class="pill">Available rewards: ${active.length}</span>
+          <span class="pill">Used rewards: ${rewards.filter(r => r.used === true).length}</span>
           <span class="pill">Last stamp: ${formatDate(c.lastStampAt || c.updatedAt || c.createdAt)}</span>
         </div>
 
