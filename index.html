@@ -1147,6 +1147,16 @@
 
         <div class="divider"></div>
 
+        <h3>Delete Customer Safely</h3>
+        <div class="notice" style="margin-top:0;">
+          This deletes the customer profile, private email record, email lookup, and stamp history together.
+        </div>
+        <label>Type DELETE to confirm</label>
+        <input id="deleteConfirmInput" placeholder="DELETE" />
+        <button id="safeDeleteCustomerBtn" class="red">Delete customer safely</button>
+
+        <div class="divider"></div>
+
         <h3>Rewards</h3>
         ${
           rewards.length
@@ -1183,12 +1193,19 @@
         stampBatchAmount = Math.max(1, Math.min(99, Number($("batchAmountInput").value || 1)));
       };
 
-      $("decreaseBatchBtn").onclick = () => setBatchAmount(stampBatchAmount - 1);
-      $("increaseBatchBtn").onclick = () => setBatchAmount(stampBatchAmount + 1);
-      $("applyBatchStampBtn").onclick = applyBatchStamps;
-      $("removeBatchStampBtn").onclick = removeBatchStamps;
-      $("useRewardBtn").onclick = useReward;
-      $("safeDeleteCustomerBtn").onclick = deleteCustomerSafely;
+      const decreaseBtn = $("decreaseBatchBtn");
+      const increaseBtn = $("increaseBatchBtn");
+      const applyBtn = $("applyBatchStampBtn");
+      const removeBtn = $("removeBatchStampBtn");
+      const useRewardBtn = $("useRewardBtn");
+      const safeDeleteBtn = $("safeDeleteCustomerBtn");
+
+      if (decreaseBtn) decreaseBtn.onclick = () => setBatchAmount(stampBatchAmount - 1);
+      if (increaseBtn) increaseBtn.onclick = () => setBatchAmount(stampBatchAmount + 1);
+      if (applyBtn) applyBtn.onclick = applyBatchStamps;
+      if (removeBtn) removeBtn.onclick = removeBatchStamps;
+      if (useRewardBtn) useRewardBtn.onclick = useReward;
+      if (safeDeleteBtn) safeDeleteBtn.onclick = deleteCustomerSafely;
     }
 
     function setBatchAmount(n) {
