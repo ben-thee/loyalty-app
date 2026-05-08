@@ -601,7 +601,7 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
-    import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
+    import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged, setPersistence, browserSessionPersistence } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
     import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, addDoc, getDocs, query, orderBy, limit, serverTimestamp, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
     const LOGO_URL = "https://drive.google.com/thumbnail?id=1Z-bUnBA-mZiyab2B_HuQQ4OSvfQYI6Nr&sz=w1000";
@@ -619,6 +619,12 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
+
+    // Session-only admin login.
+    // After the browser/app session is closed, admin must login again.
+    setPersistence(auth, browserSessionPersistence).catch(err => {
+      console.log("Auth persistence error:", err);
+    });
 
     const TARGET = 10;
     const EXPIRY_DAYS = 14;
@@ -922,7 +928,7 @@
       }
     };
 
-    $("logoutBtn").onclick = () => signOut(auth);
+    $("logoutBtn").onclick = async () => { await signOut(auth); };
 
     onAuthStateChanged(auth, user => {
       if (user) {
