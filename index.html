@@ -204,6 +204,14 @@
 
     button:active { transform: scale(.985); }
 
+    button:disabled {
+      opacity: .58;
+      cursor: not-allowed;
+      transform: none !important;
+      box-shadow: none;
+    }
+
+
     button.secondary {
       color: var(--coffee);
       background: #fff;
@@ -602,7 +610,7 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
     import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged, setPersistence, browserSessionPersistence } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
-    import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, addDoc, getDocs, query, orderBy, limit, serverTimestamp, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+    import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, addDoc, getDocs, query, orderBy, limit, serverTimestamp, deleteDoc, runTransaction } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
     const LOGO_URL = "https://drive.google.com/thumbnail?id=1Z-bUnBA-mZiyab2B_HuQQ4OSvfQYI6Nr&sz=w1000";
 
@@ -632,6 +640,10 @@
 
     let currentPhone = null;
     let stampBatchAmount = 1;
+    let isStampSaving = false;
+    let isRemoveSaving = false;
+    let isRewardSaving = false;
+    let isDeleteSaving = false;
 
     const EMAIL_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyNMGf3Tx2swO1cFtZ4UqdF8RZysTUlMKKBBCiO8677Sc6brCwqAihfQcXY0W-NVzjqPg/exec";
     const EMAIL_SECRET = "25372537";
@@ -648,6 +660,37 @@
       el.textContent = msg || "";
       el.className = "status";
       if (type) el.classList.add(type);
+    }
+
+    function setButtonLoading(btn, isLoading, loadingText = "Saving...") {
+      if (!btn) return;
+
+      if (isLoading) {
+        if (!btn.dataset.originalText) btn.dataset.originalText = btn.textContent;
+        btn.textContent = loadingText;
+        btn.disabled = true;
+      } else {
+        btn.disabled = false;
+        if (btn.dataset.originalText) {
+          btn.textContent = btn.dataset.originalText;
+          delete btn.dataset.originalText;
+        }
+      }
+    }
+
+    function setStampControlsDisabled(disabled) {
+      [
+        "applyBatchStampBtn",
+        "removeBatchStampBtn",
+        "useRewardBtn",
+        "increaseBatchBtn",
+        "decreaseBatchBtn",
+        "batchAmountInput",
+        "safeDeleteCustomerBtn"
+      ].forEach(id => {
+        const el = $(id);
+        if (el) el.disabled = disabled;
+      });
     }
 
     function escapeHtml(text) {
@@ -1145,6 +1188,7 @@
       $("applyBatchStampBtn").onclick = applyBatchStamps;
       $("removeBatchStampBtn").onclick = removeBatchStamps;
       $("useRewardBtn").onclick = useReward;
+      $("safeDeleteCustomerBtn").onclick = deleteCustomerSafely;
     }
 
     function setBatchAmount(n) {
@@ -1153,122 +1197,251 @@
     }
 
     async function applyBatchStamps() {
-      if (!currentPhone) return;
+      if (!currentPhone || isStampSaving) return;
 
       const previousY = window.scrollY;
       const amount = Math.max(1, Math.min(99, Number(stampBatchAmount || 1)));
+      const phone = currentPhone;
+      const applyBtn = $("applyBatchStampBtn");
+
+      isStampSaving = true;
+      setButtonLoading(applyBtn, true, "Applying...");
+      setStampControlsDisabled(true);
+      showStatus($("adminSearchStatus"), "Applying stamps safely...", "");
 
       try {
-        const ref = doc(db, "customers", currentPhone);
-        const snap = await getDoc(ref);
-
-        if (!snap.exists()) return;
-
-        const c = snap.data();
-        let stamps = Number(c.stamps || 0);
-        const rewards = c.rewards || [];
         let rewardsCreated = 0;
+        let finalStamps = 0;
 
-        for (let i = 0; i < amount; i++) {
-          stamps++;
+        await runTransaction(db, async (transaction) => {
+          const ref = doc(db, "customers", phone);
+          const snap = await transaction.get(ref);
 
-          if (stamps >= TARGET) {
-            stamps -= TARGET;
-            rewardsCreated++;
-
-            const now = new Date();
-            rewards.push({
-              createdAt: now.toISOString(),
-              expiresAt: addDays(now, EXPIRY_DAYS).toISOString(),
-              used: false,
-              usedAt: null
-            });
+          if (!snap.exists()) {
+            throw new Error("Customer not found.");
           }
-        }
+
+          const c = snap.data();
+          let stamps = Number(c.stamps || 0);
+          const rewards = Array.isArray(c.rewards) ? [...c.rewards] : [];
+          rewardsCreated = 0;
+
+          for (let i = 0; i < amount; i++) {
+            stamps++;
+
+            if (stamps >= TARGET) {
+              stamps -= TARGET;
+              rewardsCreated++;
+
+              const now = new Date();
+              rewards.push({
+                createdAt: now.toISOString(),
+                expiresAt: addDays(now, EXPIRY_DAYS).toISOString(),
+                used: false,
+                usedAt: null
+              });
+            }
+          }
+
+          finalStamps = stamps;
+
+          transaction.update(ref, {
+            stamps,
+            rewards,
+            updatedAt: serverTimestamp(),
+            lastStampAt: serverTimestamp()
+          });
+        });
 
         const note = rewardsCreated > 0
           ? `+${amount} stamps, converted to ${rewardsCreated} free reward(s)`
           : `+${amount} stamp(s)`;
 
-        await updateDoc(ref, {
-          stamps,
-          rewards,
-          updatedAt: serverTimestamp(),
-          lastStampAt: serverTimestamp()
-        });
-
-        await writeHistory(currentPhone, "Stamps added", note);
+        await writeHistory(phone, "Stamps added", note);
 
         if ($("sendEmailAfterStamp").checked) {
-          sendStampEmailInBackground(currentPhone, rewardsCreated > 0);
+          sendStampEmailInBackground(phone, rewardsCreated > 0);
         }
 
-        await loadAdminCustomer(currentPhone, { preserveScroll: true });
+        await loadAdminCustomer(phone, { preserveScroll: true });
+
+        showStatus($("adminSearchStatus"), `Applied ${amount} stamp(s). Current stamps: ${finalStamps}.`, "success");
         requestAnimationFrame(() => window.scrollTo({ top: previousY, behavior: "auto" }));
       } catch (e) {
         showStatus($("adminSearchStatus"), e.message, "error");
+      } finally {
+        isStampSaving = false;
+        setButtonLoading(applyBtn, false);
+        setStampControlsDisabled(false);
       }
     }
 
     async function removeBatchStamps() {
-      if (!currentPhone) return;
+      if (!currentPhone || isRemoveSaving) return;
 
       const previousY = window.scrollY;
       const amount = Math.max(1, Math.min(99, Number(stampBatchAmount || 1)));
+      const phone = currentPhone;
+      const removeBtn = $("removeBatchStampBtn");
+
+      isRemoveSaving = true;
+      setButtonLoading(removeBtn, true, "Removing...");
+      setStampControlsDisabled(true);
+      showStatus($("adminSearchStatus"), "Removing stamps safely...", "");
 
       try {
-        const ref = doc(db, "customers", currentPhone);
-        const snap = await getDoc(ref);
+        let finalStamps = 0;
 
-        if (!snap.exists()) return;
+        await runTransaction(db, async (transaction) => {
+          const ref = doc(db, "customers", phone);
+          const snap = await transaction.get(ref);
 
-        const stamps = Math.max(0, Number(snap.data().stamps || 0) - amount);
+          if (!snap.exists()) {
+            throw new Error("Customer not found.");
+          }
 
-        await updateDoc(ref, {
-          stamps,
-          updatedAt: serverTimestamp()
+          finalStamps = Math.max(0, Number(snap.data().stamps || 0) - amount);
+
+          transaction.update(ref, {
+            stamps: finalStamps,
+            updatedAt: serverTimestamp()
+          });
         });
 
-        await writeHistory(currentPhone, "Stamps removed", `-${amount} stamp(s)`);
-        await loadAdminCustomer(currentPhone, { preserveScroll: true });
+        await writeHistory(phone, "Stamps removed", `-${amount} stamp(s)`);
+        await loadAdminCustomer(phone, { preserveScroll: true });
+
+        showStatus($("adminSearchStatus"), `Removed ${amount} stamp(s). Current stamps: ${finalStamps}.`, "success");
         requestAnimationFrame(() => window.scrollTo({ top: previousY, behavior: "auto" }));
       } catch (e) {
         showStatus($("adminSearchStatus"), e.message, "error");
+      } finally {
+        isRemoveSaving = false;
+        setButtonLoading(removeBtn, false);
+        setStampControlsDisabled(false);
       }
     }
 
     async function useReward() {
-      if (!currentPhone) return;
+      if (!currentPhone || isRewardSaving) return;
 
       const previousY = window.scrollY;
+      const phone = currentPhone;
+      const rewardBtn = $("useRewardBtn");
+
+      isRewardSaving = true;
+      setButtonLoading(rewardBtn, true, "Redeeming...");
+      setStampControlsDisabled(true);
+      showStatus($("adminSearchStatus"), "Redeeming reward safely...", "");
 
       try {
-        const ref = doc(db, "customers", currentPhone);
-        const snap = await getDoc(ref);
+        await runTransaction(db, async (transaction) => {
+          const ref = doc(db, "customers", phone);
+          const snap = await transaction.get(ref);
 
-        if (!snap.exists()) return;
+          if (!snap.exists()) {
+            throw new Error("Customer not found.");
+          }
 
-        const rewards = snap.data().rewards || [];
-        const now = new Date();
-        const idx = rewards.findIndex(r => !r.used && toDate(r.expiresAt) >= now);
+          const rewards = Array.isArray(snap.data().rewards) ? [...snap.data().rewards] : [];
+          const now = new Date();
+          const idx = rewards.findIndex(r => !r.used && toDate(r.expiresAt) >= now);
 
-        if (idx === -1) {
-          return showStatus($("adminSearchStatus"), "No active reward available.", "error");
-        }
+          if (idx === -1) {
+            throw new Error("No active reward available.");
+          }
 
-        rewards[idx].used = true;
-        rewards[idx].usedAt = now.toISOString();
+          rewards[idx] = {
+            ...rewards[idx],
+            used: true,
+            usedAt: now.toISOString()
+          };
 
-        await updateDoc(ref, {
-          rewards,
-          updatedAt: serverTimestamp()
+          transaction.update(ref, {
+            rewards,
+            updatedAt: serverTimestamp()
+          });
         });
 
-        await writeHistory(currentPhone, "Reward used", "1 free reward redeemed");
-        await loadAdminCustomer(currentPhone, { preserveScroll: true });
+        await writeHistory(phone, "Reward used", "1 free reward redeemed");
+        await loadAdminCustomer(phone, { preserveScroll: true });
+
+        showStatus($("adminSearchStatus"), "Reward redeemed.", "success");
         requestAnimationFrame(() => window.scrollTo({ top: previousY, behavior: "auto" }));
       } catch (e) {
         showStatus($("adminSearchStatus"), e.message, "error");
+      } finally {
+        isRewardSaving = false;
+        setButtonLoading(rewardBtn, false);
+        setStampControlsDisabled(false);
+      }
+    }
+
+    async function deleteCustomerSafely() {
+      if (!currentPhone || isDeleteSaving) return;
+
+      const confirmText = ($("deleteConfirmInput")?.value || "").trim().toUpperCase();
+
+      if (confirmText !== "DELETE") {
+        return showStatus($("adminSearchStatus"), "Type DELETE to confirm safe customer deletion.", "error");
+      }
+
+      const phone = currentPhone;
+      const deleteBtn = $("safeDeleteCustomerBtn");
+
+      isDeleteSaving = true;
+      setButtonLoading(deleteBtn, true, "Deleting...");
+      setStampControlsDisabled(true);
+      showStatus($("adminSearchStatus"), "Deleting customer safely...", "");
+
+      try {
+        const customerRef = doc(db, "customers", phone);
+        const privateRef = doc(db, "customerPrivate", phone);
+
+        const customerSnap = await getDoc(customerRef);
+        if (!customerSnap.exists()) {
+          throw new Error("Customer not found or already deleted.");
+        }
+
+        const privateSnap = await getDoc(privateRef);
+        const email = privateSnap.exists() ? normalizeEmail(privateSnap.data().email || "") : "";
+        const historySnap = await getDocs(collection(db, "customers", phone, "history"));
+
+        for (const historyDoc of historySnap.docs) {
+          await deleteDoc(historyDoc.ref);
+        }
+
+        if (email) {
+          await deleteDoc(doc(db, "emailLookup", emailKey(email))).catch(err => {
+            console.log("Email lookup delete skipped:", err);
+          });
+        }
+
+        await deleteDoc(privateRef).catch(err => {
+          console.log("Private customer delete skipped:", err);
+        });
+
+        await deleteDoc(customerRef);
+
+        currentPhone = null;
+        stampBatchAmount = 1;
+
+        $("adminCustomerBox").innerHTML = "";
+        $("adminCustomerBox").classList.add("hidden");
+        $("adminSearchInput").value = "";
+        $("newName").value = "";
+        $("newPhone").value = "";
+        $("newEmail").value = "";
+        if ($("deleteConfirmInput")) $("deleteConfirmInput").value = "";
+
+        showStatus($("adminSearchStatus"), `Customer ${phone} deleted safely.`, "success");
+        showStatus($("saveStatus"), "");
+      } catch (e) {
+        showStatus($("adminSearchStatus"), e.message, "error");
+      } finally {
+        isDeleteSaving = false;
+        setButtonLoading(deleteBtn, false);
+        setStampControlsDisabled(false);
       }
     }
   </script>
