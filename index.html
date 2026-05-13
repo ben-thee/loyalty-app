@@ -466,6 +466,156 @@
       box-shadow: none;
     }
 
+
+    .tinyAction {
+      width: auto;
+      min-width: 124px;
+      padding: 10px 14px;
+      margin-top: 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      letter-spacing: .08em;
+      box-shadow: 0 8px 18px rgba(74, 44, 18, .10);
+    }
+
+    .customerHeaderRow {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .luckyOverlay {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background: rgba(32, 23, 17, .42);
+      backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+    }
+
+    .luckyModal {
+      width: 100%;
+      max-width: 420px;
+      background: #fffdf8;
+      border: 1px solid rgba(185,138,74,.30);
+      border-radius: 30px;
+      padding: 22px;
+      box-shadow: 0 26px 80px rgba(32, 23, 17, .28);
+      text-align: center;
+      position: relative;
+    }
+
+    .luckyClose {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      width: 38px;
+      height: 38px;
+      padding: 0;
+      margin: 0;
+      border-radius: 999px;
+      background: #fff;
+      border: 1px solid var(--line);
+      color: var(--coffee);
+      box-shadow: none;
+      font-size: 20px;
+      line-height: 1;
+    }
+
+    .wheelWrap {
+      position: relative;
+      width: min(82vw, 310px);
+      height: min(82vw, 310px);
+      margin: 18px auto 12px;
+    }
+
+    .wheelPointer {
+      position: absolute;
+      top: -8px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 0;
+      border-left: 15px solid transparent;
+      border-right: 15px solid transparent;
+      border-top: 30px solid var(--coffee);
+      z-index: 3;
+      filter: drop-shadow(0 4px 5px rgba(32, 23, 17, .20));
+    }
+
+    .luckyWheel {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      border: 10px solid #fff;
+      box-shadow: 0 12px 34px rgba(74, 44, 18, .18), inset 0 0 0 2px rgba(185,138,74,.32);
+      position: relative;
+      overflow: hidden;
+      transition: transform 4.2s cubic-bezier(.12,.78,.16,1);
+      background: conic-gradient(from -90deg,
+          #f5e8d6 0deg 45deg,
+          #e6c98e 45deg 90deg,
+          #fff3c7 90deg 135deg,
+          #d8c5af 135deg 180deg,
+          #f5e8d6 180deg 225deg,
+          #e6c98e 225deg 270deg,
+          #fff3c7 270deg 315deg,
+          #d8c5af 315deg 360deg);
+    }
+
+    .luckyWheel::after {
+      content: "";
+      position: absolute;
+      inset: 50%;
+      width: 62px;
+      height: 62px;
+      margin: -31px;
+      border-radius: 999px;
+      background: #fffdf8;
+      border: 2px solid rgba(185,138,74,.55);
+      box-shadow: 0 6px 18px rgba(74,44,18,.15);
+      z-index: 2;
+    }
+
+    .wheelLabel {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 88px;
+      margin-left: -44px;
+      margin-top: -10px;
+      transform-origin: 50% 10px;
+      color: #2f2118;
+      font-size: 10px;
+      font-weight: 950;
+      line-height: 1.05;
+      text-transform: uppercase;
+      text-align: center;
+      z-index: 1;
+      text-shadow: 0 1px 0 rgba(255,255,255,.7);
+      pointer-events: none;
+    }
+
+    .luckyResult {
+      margin-top: 12px;
+      padding: 13px 14px;
+      border-radius: 20px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.78);
+      color: var(--coffee);
+      font-weight: 850;
+      line-height: 1.45;
+      min-height: 48px;
+    }
+
+    .spinBtn {
+      margin-top: 14px;
+    }
+
     @media (max-width: 430px) {
       body { padding: 14px; }
       .logo { width: 112px; height: 112px; }
@@ -607,6 +757,27 @@
     </section>
   </div>
 
+
+  <div id="luckySpinOverlay" class="luckyOverlay hidden">
+    <div class="luckyModal">
+      <button id="closeLuckySpinBtn" class="luckyClose" type="button">×</button>
+      <h2>Lucky Spin</h2>
+      <div class="mini">One spin per account per day.</div>
+
+      <div class="wheelWrap">
+        <div class="wheelPointer"></div>
+        <div id="luckyWheel" class="luckyWheel"></div>
+      </div>
+
+      <button id="startLuckySpinBtn" class="spinBtn">Spin now</button>
+      <div id="luckySpinResult" class="luckyResult">Tap spin to try your luck today.</div>
+      <div class="mini" style="margin-top:10px;">
+        Free coffee is shown as a special-event prize and is not part of the normal daily spin.
+      </div>
+    </div>
+  </div>
+
+
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
     import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged, setPersistence, browserSessionPersistence } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
@@ -644,6 +815,24 @@
     let isRemoveSaving = false;
     let isRewardSaving = false;
     let isDeleteSaving = false;
+
+    let currentLuckyPhone = null;
+    let currentLuckySpinDocId = null;
+    let isLuckySpinning = false;
+    let currentWheelRotation = 0;
+
+    const LUCKY_SEGMENTS = [
+      { label: "5% OFF", code: "OFF5", claimable: true },
+      { label: "10% OFF", code: "OFF10", claimable: true },
+      { label: "FREE\nCOFFEE", code: "FREE_COFFEE", claimable: false },
+      { label: "TRY\nAGAIN", code: "TRY_AGAIN", claimable: true },
+      { label: "5% OFF", code: "OFF5", claimable: true },
+      { label: "10% OFF", code: "OFF10", claimable: true },
+      { label: "FREE\nCOFFEE", code: "FREE_COFFEE", claimable: false },
+      { label: "TRY\nAGAIN", code: "TRY_AGAIN", claimable: true }
+    ];
+
+    const LUCKY_ELIGIBLE_SEGMENT_INDEXES = [0, 1, 3, 4, 5, 7];
 
     const EMAIL_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyNMGf3Tx2swO1cFtZ4UqdF8RZysTUlMKKBBCiO8677Sc6brCwqAihfQcXY0W-NVzjqPg/exec";
     const EMAIL_SECRET = "25372537";
@@ -716,6 +905,23 @@
       const d = toDate(v);
       if (!d || isNaN(d)) return "-";
       return d.toLocaleDateString("en-AU", { day: "2-digit", month: "short", year: "numeric" });
+    }
+
+    function todayKeySydney() {
+      const parts = new Intl.DateTimeFormat("en-CA", {
+        timeZone: "Australia/Sydney",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit"
+      }).formatToParts(new Date());
+
+      const map = {};
+      parts.forEach(p => map[p.type] = p.value);
+      return `${map.year}-${map.month}-${map.day}`;
+    }
+
+    function luckySpinDocId(phone) {
+      return `${phone}_${todayKeySydney()}`;
     }
 
     const activeRewards = (rewards = []) => rewards.filter(r => !r.used && toDate(r.expiresAt) >= new Date());
@@ -874,8 +1080,13 @@
       const expired = expiredRewards(c.rewards || []);
 
       $("customerResult").innerHTML = `
-        <div class="customerName">${escapeHtml(c.name || "Customer")}</div>
-        <div class="mini">${escapeHtml(c.phone || "")}</div>
+        <div class="customerHeaderRow">
+          <div>
+            <div class="customerName">${escapeHtml(c.name || "Customer")}</div>
+            <div class="mini">${escapeHtml(c.phone || "")}</div>
+          </div>
+          <button id="luckySpinBtn" class="tinyAction" type="button">Lucky Spin</button>
+        </div>
 
         <div class="bigNumber">${Number(c.stamps || 0)}</div>
         <div class="mini" style="text-align:center;">stamps collected</div>
@@ -904,6 +1115,7 @@
       `;
 
       $("customerResult").classList.remove("hidden");
+      prepareLuckySpinButton(c.phone || "");
     }
 
     $("registerBtn").onclick = async () => {
@@ -957,6 +1169,182 @@
         showStatus($("registerStatus"), e.message, "error");
       }
     };
+
+    function renderLuckyWheelLabels() {
+      const wheel = $("luckyWheel");
+      if (!wheel || wheel.dataset.ready === "true") return;
+
+      LUCKY_SEGMENTS.forEach((seg, i) => {
+        const label = document.createElement("div");
+        label.className = "wheelLabel";
+        label.innerHTML = escapeHtml(seg.label).replaceAll("\\n", "<br>");
+        const angle = i * 45 + 22.5;
+        label.style.transform = `rotate(${angle}deg) translateY(-112px) rotate(90deg)`;
+        wheel.appendChild(label);
+      });
+
+      wheel.dataset.ready = "true";
+    }
+
+    async function prepareLuckySpinButton(phone) {
+      const btn = $("luckySpinBtn");
+      if (!btn || !phone) return;
+
+      btn.onclick = () => openLuckySpin(phone);
+
+      try {
+        const docId = luckySpinDocId(phone);
+        const snap = await getDoc(doc(db, "luckySpins", docId));
+
+        if (snap.exists()) {
+          btn.textContent = "Spin used";
+          btn.classList.add("secondary");
+        } else {
+          btn.textContent = "Lucky Spin";
+          btn.classList.remove("secondary");
+        }
+      } catch (err) {
+        console.log("Lucky spin check failed:", err);
+      }
+    }
+
+    async function openLuckySpin(phone) {
+      currentLuckyPhone = phone;
+      currentLuckySpinDocId = luckySpinDocId(phone);
+      isLuckySpinning = false;
+
+      renderLuckyWheelLabels();
+
+      $("luckySpinOverlay").classList.remove("hidden");
+      $("luckySpinResult").textContent = "Checking today's spin...";
+      $("startLuckySpinBtn").disabled = true;
+      $("startLuckySpinBtn").textContent = "Checking...";
+
+      try {
+        const spinRef = doc(db, "luckySpins", currentLuckySpinDocId);
+        const snap = await getDoc(spinRef);
+
+        if (snap.exists()) {
+          const data = snap.data();
+          const segIndex = Number(data.segmentIndex || 0);
+          snapWheelToSegment(segIndex);
+          $("luckySpinResult").innerHTML = `Already spun today.<br><strong>${escapeHtml(data.prizeLabel || "Try again later")}</strong>`;
+          $("startLuckySpinBtn").textContent = "Used today";
+          $("startLuckySpinBtn").disabled = true;
+          return;
+        }
+
+        $("luckySpinResult").textContent = "Tap spin to try your luck today.";
+        $("startLuckySpinBtn").textContent = "Spin now";
+        $("startLuckySpinBtn").disabled = false;
+      } catch (err) {
+        $("luckySpinResult").textContent = err.message;
+        $("startLuckySpinBtn").textContent = "Unavailable";
+        $("startLuckySpinBtn").disabled = true;
+      }
+    }
+
+    function chooseLuckySegmentIndex() {
+      return LUCKY_ELIGIBLE_SEGMENT_INDEXES[
+        Math.floor(Math.random() * LUCKY_ELIGIBLE_SEGMENT_INDEXES.length)
+      ];
+    }
+
+    function snapWheelToSegment(segmentIndex) {
+      const wheel = $("luckyWheel");
+      if (!wheel) return;
+
+      const segmentCenter = segmentIndex * 45 + 22.5;
+      currentWheelRotation = 360 - segmentCenter;
+      wheel.style.transition = "none";
+      wheel.style.transform = `rotate(${currentWheelRotation}deg)`;
+    }
+
+    function animateWheelToSegment(segmentIndex) {
+      const wheel = $("luckyWheel");
+      const segmentCenter = segmentIndex * 45 + 22.5;
+      const finalRotation = currentWheelRotation + 360 * 6 + (360 - segmentCenter);
+      currentWheelRotation = finalRotation;
+
+      wheel.style.transition = "transform 4.2s cubic-bezier(.12,.78,.16,1)";
+      wheel.style.transform = `rotate(${finalRotation}deg)`;
+    }
+
+    async function startLuckySpin() {
+      if (!currentLuckyPhone || !currentLuckySpinDocId || isLuckySpinning) return;
+
+      isLuckySpinning = true;
+      $("startLuckySpinBtn").disabled = true;
+      $("startLuckySpinBtn").textContent = "Spinning...";
+      $("luckySpinResult").textContent = "Good luck...";
+
+      const segmentIndex = chooseLuckySegmentIndex();
+      const prize = LUCKY_SEGMENTS[segmentIndex];
+
+      animateWheelToSegment(segmentIndex);
+
+      window.setTimeout(async () => {
+        try {
+          const spinRef = doc(db, "luckySpins", currentLuckySpinDocId);
+          let savedResult = null;
+
+          await runTransaction(db, async (transaction) => {
+            const existing = await transaction.get(spinRef);
+
+            if (existing.exists()) {
+              savedResult = existing.data();
+              return;
+            }
+
+            savedResult = {
+              phone: currentLuckyPhone,
+              dateKey: todayKeySydney(),
+              segmentIndex,
+              prizeCode: prize.code,
+              prizeLabel: prize.label.replaceAll("\\n", " "),
+              claimable: prize.claimable === true,
+              createdAt: serverTimestamp()
+            };
+
+            transaction.set(spinRef, savedResult);
+          });
+
+          const label = savedResult.prizeLabel || prize.label.replaceAll("\\n", " ");
+          const savedSegment = Number(savedResult.segmentIndex ?? segmentIndex);
+
+          snapWheelToSegment(savedSegment);
+
+          if (savedResult.prizeCode === "TRY_AGAIN") {
+            $("luckySpinResult").innerHTML = `<strong>Bad luck — try again tomorrow.</strong>`;
+          } else {
+            $("luckySpinResult").innerHTML = `<strong>${escapeHtml(label)}</strong><br>Show this screen to staff today.`;
+          }
+
+          $("startLuckySpinBtn").textContent = "Used today";
+          $("startLuckySpinBtn").disabled = true;
+
+          const btn = $("luckySpinBtn");
+          if (btn) {
+            btn.textContent = "Spin used";
+            btn.classList.add("secondary");
+          }
+        } catch (err) {
+          $("luckySpinResult").textContent = err.message;
+          $("startLuckySpinBtn").textContent = "Try again";
+          $("startLuckySpinBtn").disabled = false;
+        } finally {
+          isLuckySpinning = false;
+        }
+      }, 4350);
+    }
+
+    $("closeLuckySpinBtn").onclick = () => {
+      if (isLuckySpinning) return;
+      $("luckySpinOverlay").classList.add("hidden");
+    };
+
+    $("startLuckySpinBtn").onclick = startLuckySpin;
+
 
     $("loginBtn").onclick = async () => {
       try {
